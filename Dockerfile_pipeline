@@ -1,0 +1,6 @@
+FROM ninai/pipeline
+
+RUN rm -rf /data/pipeline
+
+RUN git clone https://github.com/cajal/pipeline.git /data/pipeline
+
