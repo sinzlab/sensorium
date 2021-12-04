@@ -5,7 +5,7 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 setup(
-    name="cascade_",
+    name="cascade",
     version="0.1",
     description="",
     author="Konstantin Willeke",
