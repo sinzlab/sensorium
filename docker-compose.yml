@@ -5,14 +5,15 @@ services:
   notebook:
     image: neural-prediction-challenge
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: ./neural-prediction-challenge/Dockerfile
       args:
         - GITHUB_USER=${GITHUB_USER}
         - GITHUB_TOKEN=${GITHUB_TOKEN}
         - DEV_SOURCE=${DEV_SOURCE}
     volumes:
       - .:/project
+      - ../neuralpredictors:/src/neuralpredictors
     env_file:
       - .env
     entrypoint:

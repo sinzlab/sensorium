@@ -19,18 +19,13 @@ RUN git clone --depth 1 --branch v0.0 https://github.com/${DEV_SOURCE}/data_port
 FROM ${BASE_IMAGE}
 COPY --from=base /src /src
 
-RUN python -m pip install --upgrade pip
-RUN python -m pip --no-cache-dir install \
-    neuralpredictors==0.2.0 \
-    nnfabrik==0.1.0
-
 RUN python -m pip install -e /src/data_port
-# RUN python -m pip install -e /src/data_port &&\
-#     python -m pip install -e /src/nndichromacy
+
+COPY ./neuralpredictors /src/neuralpredictors
+RUN python -m pip install -e /src/neuralpredictors
 
 WORKDIR /project
 RUN mkdir /project/cascade
-COPY cascade /project/cascade
-COPY setup.py /project
+COPY ./neural-prediction-challenge/cascade /project/cascade
+COPY ./neural-prediction-challenge/setup.py /project
 RUN python -m pip install -e /project
-
