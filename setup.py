@@ -6,10 +6,10 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name="cascade",
-    version="0.1",
+    version="0.0",
     description="",
-    author="Konstantin Willeke",
-    author_email="konstantin.willeke@gmail.com",
+    author="sinzlab",
+    # author_email="sinzlab@gmail.com",
     packages=find_packages(exclude=[]),
     install_requires=[
         "sphinx",
