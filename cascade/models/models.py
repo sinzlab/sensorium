@@ -92,7 +92,7 @@ def stacked_core_full_gauss_readout(
     )
     set_random_seed(seed)
 
-    core = Stacked2dCore(
+    core = SE2dCore(
         input_channels=core_input_channels,
         hidden_channels=hidden_channels,
         input_kern=input_kern,
@@ -115,7 +115,10 @@ def stacked_core_full_gauss_readout(
         hidden_padding=hidden_padding,
     )
 
-    in_shapes_dict = {k: get_module_output(core, v[in_name])[1:] for k, v in session_shape_dict.items()}
+    in_shapes_dict = {
+        k: get_module_output(core, v[in_name])[1:]
+        for k, v in session_shape_dict.items()
+    }
 
     readout = MultipleFullGaussian2d(
         in_shape_dict=in_shapes_dict,
