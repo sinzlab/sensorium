@@ -1,26 +1,21 @@
 version: '3.4'
-x-build: &build
-  context: .
-  dockerfile: Dockerfile
-
-x-shared: &common
-  build:
-    context: .
-    dockerfile: Dockerfile
-    args:
-      - GITHUB_USER=${GITHUB_USER}
-      - GITHUB_TOKEN=${GITHUB_TOKEN}
-      - DEV_SOURCE=${DEV_SOURCE}
-  volumes:
-    - .:/src/nndichromacy
-    - ./notebooks:/notebooks
-    - /mnt/scratch07/color_mei:/data
-    - /mnt/scratch07/nexport:/nexport
-  env_file:
-    - .env
 
 services:
+
   notebook:
-    <<: *common
-    ports:
-      - "8888:8888"
+    image: neural-prediction-challenge
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - GITHUB_USER=${GITHUB_USER}
+        - GITHUB_TOKEN=${GITHUB_TOKEN}
+        - DEV_SOURCE=${DEV_SOURCE}
+    volumes:
+      - .:/project
+    env_file:
+      - .env
+    entrypoint:
+      - jupyter
+      - lab
+      - --allow-root
