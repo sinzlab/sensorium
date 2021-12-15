@@ -1,0 +1,28 @@
+# Be sure to update the content here and name the file `.env`
+
+# desired binding address. If left unspecified, binds to 0.0.0.0
+JUPYTER_HOST=127.0.0.1
+
+# desired port number to launch Jupyter service on
+JUPYTER_PORT=10120 
+
+# password to protect your Jupyter Lab environment
+JUPYTER_PASSWORD=simple_password
+
+# Be sure to replace all values in double quote with real value
+# Also remove double quote when replacing with the real value
+DJ_HOST="host address for DJ database"
+DJ_USER="username for DJ database"
+DJ_PASSWORD="password for DJ database, completely optional"
+
+# MINIO info:
+MINIO_ENDPOINT="endpoint address for minio storage"
+MINIO_ACCESS_KEY="access key for minio storage"
+MINIO_SECRET_KEY="secret key for minio storage"
+
+# GitHub-related info:
+# This is to have the possibility for cloning and installing private
+# repos while building image
+GITHUB_TOKEN="your GitHub token"
+GITHUB_USER="your GitHub username"
+DEV_SOURCE="upstream account"
