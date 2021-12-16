@@ -161,7 +161,7 @@ class Metrics:
         correlation = corr(mean_responses, mean_predictions, axis=0)
         return correlation if per_neuron else correlation.mean()
 
-    def FEVE(
+    def feve(
         self,
         predictions_submitted,
         trial_idx_submitted,
@@ -192,9 +192,9 @@ class Metrics:
         # check if trial indices and neuron ids are the same as the reference
         self.check_equality(trial_idx, neuron_ids)
 
-        feve = fev(
+        feve_val = fev(
             self.split_images(self.responses),
             self.split_images(predictions),
             return_exp_var=False,
         )
-        return feve if per_neuron else feve.mean()
+        return feve_val if per_neuron else feve_val.mean()
