@@ -16,6 +16,6 @@ setup(
         "pytorch_sphinx_theme",
         "recommonmark",
         "nnfabrik==0.1.0",
-        "scikit-image>=0.19.1"
+        "scikit-image>=0.19.1",
     ],
 )

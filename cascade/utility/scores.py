@@ -80,7 +80,9 @@ def model_predictions_repeats(
                     model
                 ) else contextlib.nullcontext():
                     output = (
-                        model(unique_images.to(device), data_key=data_key).detach().cpu()
+                        model(unique_images.to(device), data_key=data_key)
+                        .detach()
+                        .cpu()
                     )
 
                 output = output.numpy()

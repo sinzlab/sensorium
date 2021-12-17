@@ -188,7 +188,12 @@ def standard_trainer(
         ):
 
             loss = full_objective(
-                model, dataloaders["train"], data_key, *data, **data._asdict(), detach_core=detach_core
+                model,
+                dataloaders["train"],
+                data_key,
+                *data,
+                **data._asdict(),
+                detach_core=detach_core
             )
             loss.backward()
             if (batch_no + 1) % optim_step_count == 0:
