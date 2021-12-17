@@ -188,6 +188,9 @@ def static_loader(
     if include_px_position is True:
         more_transforms.insert(0, AddPositionAsChannels())
 
+    if scale is not None:
+        more_transforms.insert(0, ScaleInputs(scale=scale))
+
     if select_input_channel is not None:
         more_transforms.insert(0, SelectInputChannel(select_input_channel))
 
@@ -210,9 +213,6 @@ def static_loader(
             )
         except:
             more_transforms.insert(0, NeuroNormalizer(dat, exclude=exclude))
-
-    if scale is not None:
-        more_transforms.insert(0, ScaleInputs(scale=scale))
 
     dat.transforms.extend(more_transforms)
 
