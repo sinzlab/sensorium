@@ -19,13 +19,13 @@ RUN git clone --depth 1 --branch v0.0 https://github.com/${DEV_SOURCE}/data_port
 FROM ${BASE_IMAGE}
 COPY --from=base /src /src
 
-RUN python -m pip install -e /src/data_port
+RUN cd /src/data_port && python setup.py develop
 
 COPY ./neuralpredictors /src/neuralpredictors
-RUN python -m pip install -e /src/neuralpredictors
+RUN cd /src/neuralpredictors && python setup.py develop
 
 WORKDIR /project
 RUN mkdir /project/cascade
 COPY ./neural-prediction-challenge/cascade /project/cascade
 COPY ./neural-prediction-challenge/setup.py /project
-RUN python -m pip install -e /project
+RUN python setup.py develop
