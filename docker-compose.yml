@@ -3,6 +3,7 @@ version: '3.4'
 services:
 
   notebook:
+    privileged: true
     image: neural-prediction-challenge
     build:
       context: ../
