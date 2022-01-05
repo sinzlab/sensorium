@@ -6,13 +6,12 @@ dj.config["enable_python_native_blobs"] = True
 
 if not "stores" in dj.config:
     dj.config["stores"] = {}
-dj.config["stores"] = {
-    "nnfabrik": {  #  store in s3
-        "protocol": "s3",
-        "endpoint": os.environ.get("S3_ENDPOINT", "FAKE_ENDPOINT"),
-        "bucket": "nnexplore",
-        "location": "dj-store",
-        "access_key": os.environ.get("S3_ACCESS_KEY", "FAKEKEY"),
-        "secret_key": os.environ.get("S3_SECRET_KEY", "FAKEKEY"),
-    }
+dj.config["stores"]["minio"] = {  # store in s3
+    "protocol": "s3",
+    "endpoint": os.environ.get("MINIO_ENDPOINT", "DUMMY_ENDPOINT"),
+    "bucket": "nnfabrik",
+    "location": "dj-store",
+    "access_key": os.environ.get("MINIO_ACCESS_KEY", "FAKEKEY"),
+    "secret_key": os.environ.get("MINIO_SECRET_KEY", "FAKEKEY"),
+    "secure": True,
 }
