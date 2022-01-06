@@ -14,7 +14,7 @@ RUN git config --global credential.helper store &&\
     echo https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com >> ~/.git-credentials
 
 # clone projects from public/private github repos
-RUN git clone --depth 1 --branch v0.0 https://github.com/${DEV_SOURCE}/data_port.git
+RUN git clone --depth 1 --branch challenge https://github.com/${DEV_SOURCE}/data_port.git
 
 FROM ${BASE_IMAGE}
 COPY --from=base /src /src
