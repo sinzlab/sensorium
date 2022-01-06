@@ -27,3 +27,6 @@ secrets/
 logs/
 *.sif
 data/
+*.zip
+*.json
+*.log
