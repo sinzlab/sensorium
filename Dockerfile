@@ -19,13 +19,15 @@ RUN git clone --depth 1 --branch challenge https://github.com/${DEV_SOURCE}/data
 FROM ${BASE_IMAGE}
 COPY --from=base /src /src
 
-RUN cd /src/data_port && python setup.py develop
+RUN python3.8 -m pip install --upgrade pip
+
+RUN cd /src/data_port && python3.8 -m pip install -e .
 
 COPY ./neuralpredictors /src/neuralpredictors
-RUN cd /src/neuralpredictors && python setup.py develop
+RUN cd /src/neuralpredictors && python3.8 -m pip install --no-use-pep517 -e .
 
 WORKDIR /project
 RUN mkdir /project/cascade
-COPY ./neural-prediction-challenge/cascade /project/cascade
-COPY ./neural-prediction-challenge/setup.py /project
-RUN python setup.py develop
+COPY ./cascade /project/cascade
+COPY ./setup.py /project
+RUN python3.8 -m pip install -e .
