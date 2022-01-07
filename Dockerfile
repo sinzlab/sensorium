@@ -20,6 +20,7 @@ FROM ${BASE_IMAGE}
 COPY --from=base /src /src
 
 RUN python3.8 -m pip install --upgrade pip
+RUN python3.8 -m pip --no-cache-dir install hub
 
 RUN cd /src/data_port && python3.8 -m pip install -e .
 

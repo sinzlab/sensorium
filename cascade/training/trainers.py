@@ -39,7 +39,6 @@ def standard_trainer(
     min_lr=0.0001,
     cb=None,
     track_training=False,
-    return_test_score=False,
     detach_core=False,
     **kwargs
 ):
@@ -210,17 +209,11 @@ def standard_trainer(
     validation_correlation = get_correlations(
         model, dataloaders["validation"], device=device, as_dict=False, per_neuron=False
     )
-    test_correlation = get_correlations(
-        model, dataloaders["test"], device=device, as_dict=False, per_neuron=False
-    )
 
     # return the whole tracker output as a dict
     output = {k: v for k, v in tracker.log.items()} if track_training else {}
     output["validation_corr"] = validation_correlation
 
-    score = (
-        np.mean(test_correlation)
-        if return_test_score
-        else np.mean(validation_correlation)
-    )
+    score = np.mean(validation_correlation)
+
     return score, output, model.state_dict()

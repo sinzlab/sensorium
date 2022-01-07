@@ -104,9 +104,13 @@ def model_predictions(model, dataloader, data_key, device="cpu"):
 
     target, output = torch.empty(0), torch.empty(0)
     for batch in dataloader:
-        batch_args = list(batch)
-        batch_kwargs = batch._asdict() if not isinstance(batch, dict) else batch
-        images, responses = batch_args[:2]
+        # batch_args = list(batch)
+        # batch_kwargs = batch._asdict() if not isinstance(batch, dict) else batch
+        images, responses = (
+            batch[:2]
+            if not isinstance(batch, dict)
+            else (batch["inputs"], batch["targets"])
+        )
         with torch.no_grad():
             with device_state(model, device) if not is_ensemble_function(
                 model
@@ -114,13 +118,7 @@ def model_predictions(model, dataloader, data_key, device="cpu"):
                 output = torch.cat(
                     (
                         output,
-                        (
-                            model(
-                                images.to(device), data_key=data_key, **batch_kwargs
-                            )
-                            .detach()
-                            .cpu()
-                        ),
+                        (model(images.to(device), data_key=data_key).detach().cpu()),
                     ),
                     dim=0,
                 )

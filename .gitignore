@@ -30,3 +30,4 @@ data/
 *.zip
 *.json
 *.log
+*.csv
