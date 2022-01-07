@@ -1,3 +1,4 @@
+from torch import nn
 from nnfabrik.utility.nn_helpers import set_random_seed, get_dims_for_loader_dict
 
 from neuralpredictors.utils import get_module_output
@@ -9,6 +10,37 @@ from neuralpredictors.layers.cores import (
     SE2dCore,
     RotationEquivariant2dCore,
 )
+
+
+class Encoder(FiringRateEncoder):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def forward(
+        self,
+        *args,
+        targets=None,
+        data_key=None,
+        behavior=None,
+        pupil_center=None,
+        trial_idx=None,
+        shift=None,
+        detach_core=False,
+        **kwargs
+    ):
+        x = self.core(args[0])
+        if detach_core:
+            x = x.detach()
+
+        if self.shifter and pupil_center is not None:
+            shift = self.shifter[data_key](pupil_center, trial_idx)
+
+        x = self.readout(x, data_key=data_key, shift=shift, **kwargs)
+
+        if self.modulator and behavior is not None:
+            x = self.modulator[data_key](x, behavior=behavior)
+
+        return nn.functional.elu(x + self.offset) + 1
 
 
 def stacked_core_full_gauss_readout(
@@ -80,7 +112,9 @@ def stacked_core_full_gauss_readout(
 
     # Obtain the named tuple fields from the first entry of the first dataloader in the dictionary
     batch = next(iter(list(dataloaders.values())[0]))
-    in_name, out_name = list(batch.keys())[:2] if isinstance(batch, dict) else batch._fields[:2]
+    in_name, out_name = (
+        list(batch.keys())[:2] if isinstance(batch, dict) else batch._fields[:2]
+    )
 
     session_shape_dict = get_dims_for_loader_dict(dataloaders)
     n_neurons_dict = {k: v[out_name][1] for k, v in session_shape_dict.items()}
@@ -152,7 +186,7 @@ def stacked_core_full_gauss_readout(
                 gamma_shifter=gamma_shifter,
             )
 
-    model = FiringRateEncoder(
+    model = Encoder(
         core=core,
         readout=readout,
         shifter=shifter,
