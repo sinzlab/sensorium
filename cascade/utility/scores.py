@@ -33,7 +33,9 @@ def model_predictions_repeats(
     target, output = [], []
     unique_images = torch.empty(0).to(device)
     for batch in dataloader:
-        images, responses = batch[:2]
+        batch_args = list(batch)
+        batch_kwargs = batch._asdict() if not isinstance(batch, dict) else batch
+        images, responses = batch_args[:2]
 
         if len(images.shape) == 5:
             images = images.squeeze(dim=0)
@@ -64,7 +66,7 @@ def model_predictions_repeats(
                     model
                 ) else contextlib.nullcontext():
                     output.append(
-                        model(*batch, data_key=data_key, **batch._asdict())
+                        model(*batch_args, data_key=data_key, **batch_kwargs)
                         .detach()
                         .cpu()
                         .numpy()
@@ -102,7 +104,9 @@ def model_predictions(model, dataloader, data_key, device="cpu"):
 
     target, output = torch.empty(0), torch.empty(0)
     for batch in dataloader:
-        images, responses = batch[:2]
+        batch_args = list(batch)
+        batch_kwargs = batch._asdict() if not isinstance(batch, dict) else batch
+        images, responses = batch_args[:2]
         with torch.no_grad():
             with device_state(model, device) if not is_ensemble_function(
                 model
@@ -112,7 +116,7 @@ def model_predictions(model, dataloader, data_key, device="cpu"):
                         output,
                         (
                             model(
-                                images.to(device), data_key=data_key, **batch._asdict()
+                                images.to(device), data_key=data_key, **batch_kwargs
                             )
                             .detach()
                             .cpu()

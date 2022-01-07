@@ -15,5 +15,6 @@ setup(
         "nnfabrik==0.1.0",
         "scikit-image>=0.19.1",
         "lipstick",
+        "numpy>=1.22.0",
     ],
 )
