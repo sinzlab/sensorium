@@ -187,12 +187,14 @@ def standard_trainer(
             desc="Epoch {}".format(epoch),
         ):
 
+            batch_args = list(data)
+            batch_kwargs = data._asdict() if not isinstance(data, dict) else data
             loss = full_objective(
                 model,
                 dataloaders["train"],
                 data_key,
-                *data,
-                **data._asdict(),
+                *batch_args,
+                **batch_kwargs,
                 detach_core=detach_core
             )
             loss.backward()
