@@ -18,4 +18,4 @@ class Permute:
             self.permutation = (2, 0, 1)
 
     def __call__(self, images):
-        print(images.transpose(*self.permutation).shape)
+        return images.transpose(*self.permutation)
