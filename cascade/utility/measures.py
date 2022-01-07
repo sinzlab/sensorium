@@ -17,7 +17,7 @@ def get_repeated_outputs(dataloader, min_repeats=2):
     repeated_inputs = []
     repeated_outputs = []
     for batch in dataloader:
-        inputs, outputs = batch[:2]
+        inputs, outputs = list(batch[:2])
         if len(inputs.shape) == 5:
             inputs = np.squeeze(inputs.cpu().numpy(), axis=0)
             outputs = np.squeeze(outputs.cpu().numpy(), axis=0)
@@ -103,7 +103,7 @@ def get_fano_factor(dataloaders, as_dict=False, per_neuron=True):
     for k, dataloader in dataloaders.items():
         target = torch.empty(0)
         for batch in dataloader:
-            images, responses = batch[:2]
+            images, responses = list(batch)[:2]
             if len(images.shape) == 5:
                 responses = responses.squeeze(dim=0)
             target = torch.cat((target, responses.detach().cpu()), dim=0)
@@ -124,7 +124,7 @@ def get_SNR(dataloaders, as_dict=False, per_neuron=True):
         # assert isinstance(dataloader.batch_sampler, RepeatsBatchSampler), 'dataloader.batch_sampler must be a RepeatsBatchSampler'
         responses = []
         for batch in dataloader:
-            images, resp = batch[:2]
+            images, resp = list(batch)[:2]
             responses.append(anscombe(resp.data.cpu().numpy()))
         mu = np.array([np.mean(repeats, axis=0) for repeats in responses])
         mu_bar = np.mean(mu, axis=0)
@@ -150,7 +150,7 @@ def get_avg_firing(dataloaders, as_dict=False, per_neuron=True):
     for k, dataloader in dataloaders.items():
         target = torch.empty(0)
         for batch in dataloader:
-            images, responses = batch[:2]
+            images, responses = list(batch)[:2]
             if len(images.shape) == 5:
                 responses = responses.squeeze(dim=0)
             target = torch.cat((target, responses.detach().cpu()), dim=0)
