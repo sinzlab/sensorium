@@ -28,6 +28,6 @@ RUN cd /src/neuralpredictors && python3.8 -m pip install --no-use-pep517 -e .
 
 WORKDIR /project
 RUN mkdir /project/cascade
-COPY ./cascade /project/cascade
-COPY ./setup.py /project
+COPY ./neural-prediction-challenge/cascade /project/cascade
+COPY ./neural-prediction-challenge/setup.py /project
 RUN python3.8 -m pip install -e .
