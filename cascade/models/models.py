@@ -79,7 +79,8 @@ def stacked_core_full_gauss_readout(
         dataloaders = dataloaders["train"]
 
     # Obtain the named tuple fields from the first entry of the first dataloader in the dictionary
-    in_name, out_name = next(iter(list(dataloaders.values())[0]))._fields[:2]
+    batch = next(iter(list(dataloaders.values())[0]))
+    in_name, out_name = list(batch.keys())[:2] if isinstance(batch, dict) else batch._fields[:2]
 
     session_shape_dict = get_dims_for_loader_dict(dataloaders)
     n_neurons_dict = {k: v[out_name][1] for k, v in session_shape_dict.items()}
