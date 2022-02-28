@@ -7,8 +7,8 @@ from nnfabrik.builder import get_data
 
 from .utility.metrics import Metrics
 
-ground_truth_data = ['static26645-2-18-GrayImageNet-94c6ff995dac583098847cfecd43e7b6.zip',
-                     'static26644-14-17-GrayImageNet-94c6ff995dac583098847cfecd43e7b6.zip']
+ground_truth_data = ['/data/mouse/toliaslab/static/static26645-2-18-GrayImageNet-94c6ff995dac583098847cfecd43e7b6.zip',
+                     '/data/mouse/toliaslab/static/static26644-14-17-GrayImageNet-94c6ff995dac583098847cfecd43e7b6.zip']
 
 
 def load_submission_data(submission_path):
