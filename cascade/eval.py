@@ -7,8 +7,10 @@ from nnfabrik.builder import get_data
 
 from .utility.metrics import Metrics
 
-ground_truth_data = ['/data/mouse/toliaslab/static/static26645-2-18-GrayImageNet-94c6ff995dac583098847cfecd43e7b6.zip',
-                     '/data/mouse/toliaslab/static/static26644-14-17-GrayImageNet-94c6ff995dac583098847cfecd43e7b6.zip']
+ground_truth_data = [
+    "/data/mouse/toliaslab/static/static26645-2-18-GrayImageNet-94c6ff995dac583098847cfecd43e7b6.zip",
+    "/data/mouse/toliaslab/static/static26644-14-17-GrayImageNet-94c6ff995dac583098847cfecd43e7b6.zip",
+]
 
 
 def load_submission_data(submission_path):
@@ -36,7 +38,9 @@ def load_submission_data(submission_path):
     return trial_idx, image_ids, neuron_ids, predictions
 
 
-def load_groundtruth_data(benchmark=0, ):
+def load_groundtruth_data(
+    benchmark=0,
+):
     """
     Extract necessary data for model evaluation from the ground truth data file.
 
@@ -53,12 +57,12 @@ def load_groundtruth_data(benchmark=0, ):
                - responses (2d array: trials x neurons)
     """
 
-
-    dataset_fn = 'cascade.datasets.static_loaders'
-    dataset_config = {'paths': [ground_truth_data[benchmark]],
-                      'normalize': False,
-                      'batch_size': 64,
-                      }
+    dataset_fn = "cascade.datasets.static_loaders"
+    dataset_config = {
+        "paths": [ground_truth_data[benchmark]],
+        "normalize": False,
+        "batch_size": 64,
+    }
     dataloaders = get_data(dataset_fn, dataset_config)
     data_key = list(dataloaders["test"].keys())[0]
     dat = dataloaders["train"][data_key].dataset
@@ -84,8 +88,7 @@ def load_groundtruth_data(benchmark=0, ):
     return trial_idx, image_ids, neuron_ids, responses
 
 
-
-def evaluate(submission_path, ground_truth_path):
+def evaluate(submission_path, benchmark):
     """
     Compute evaluation metrics for a specific submission given the ground truth data.
 
@@ -97,7 +100,7 @@ def evaluate(submission_path, ground_truth_path):
         dict: Containing all the evaluation results for all the evaluation metrics.
     """
     trial_idx_gt, image_ids_gt, neuron_ids_gt, responses = load_groundtruth_data(
-        ground_truth_path
+        benchmark=benchmark,
     )
     (
         trial_idx_submitted,
