@@ -56,7 +56,7 @@ def load_groundtruth_data(benchmark=0, ):
 
     dataset_fn = 'cascade.datasets.static_loaders'
     dataset_config = {'paths': [ground_truth_data[benchmark]],
-                      'normalize': True,
+                      'normalize': False,
                       'batch_size': 64,
                       }
     dataloaders = get_data(dataset_fn, dataset_config)
