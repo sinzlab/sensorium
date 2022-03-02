@@ -3,8 +3,6 @@ import ast
 import numpy as np
 import pandas as pd
 
-from nnfabrik.builder import get_data
-
 from .utility.metrics import Metrics
 
 ground_truth_data = [
@@ -38,16 +36,12 @@ def load_submission_data(submission_path):
     return trial_idx, image_ids, neuron_ids, predictions
 
 
-def load_groundtruth_data(
-    benchmark=0,
-):
+def load_groundtruth_data(ground_truth_path):
     """
-    Extract necessary data for model evaluation from the ground truth data file.
+    Extract necessary data for model evaluation from the submitted csv file.
 
     Args:
-        benchmark (int): Specifies which of benchmark to get the ground truth data from.
-            0:  stimulus-responses challenge, data_key: 26645-2-18
-            1:  brain state challenge, data_key: 26644-14-17
+        ground_truth_path (str): Complete path to the ground truth .csv file.
 
     Returns:
         tuple: Contains:
@@ -56,39 +50,18 @@ def load_groundtruth_data(
                - neuron IDs (1D array)
                - responses (2d array: trials x neurons)
     """
-
-    dataset_fn = "cascade.datasets.static_loaders"
-    dataset_config = {
-        "paths": [ground_truth_data[benchmark]],
-        "normalize": False,
-        "batch_size": 64,
-    }
-    dataloaders = get_data(dataset_fn, dataset_config)
-    data_key = list(dataloaders["test"].keys())[0]
-    dat = dataloaders["train"][data_key].dataset
-
-    neuron_ids = dat.neurons.unit_ids
-    tiers = dat.trial_info.tiers
-    complete_image_ids = dat.trial_info.frame_image_id
-    complete_trial_idx = dat.trial_info.trial_idx
-
-    trial_idx, responses, image_ids = [], [], []
-    for i, datapoint in enumerate(dataloaders["train"][data_key].dataset):
-        if tiers[i] != "test":
-            continue
-
-        trial_idx.append(complete_trial_idx[i])
-        image_ids.append(complete_image_ids[i])
-        responses.append(datapoint.responses.cpu().numpy().squeeze())
-
-    trial_idx = np.array(trial_idx)
-    image_ids = np.array(image_ids)
-    responses = np.stack(responses)
+    ground_truth_df = pd.read_csv(ground_truth_path)
+    trial_idx = ground_truth_df["trial_indices"].values
+    image_ids = ground_truth_df["image_ids"].values
+    neuron_ids = np.array(ast.literal_eval(ground_truth_df["neuron_ids"].values[0]))
+    responses = np.array(
+        [ast.literal_eval(v) for v in ground_truth_df["responses"].values]
+    )
 
     return trial_idx, image_ids, neuron_ids, responses
 
 
-def evaluate(submission_path, benchmark):
+def evaluate(submission_path, ground_truth_path):
     """
     Compute evaluation metrics for a specific submission given the ground truth data.
 
@@ -100,7 +73,7 @@ def evaluate(submission_path, benchmark):
         dict: Containing all the evaluation results for all the evaluation metrics.
     """
     trial_idx_gt, image_ids_gt, neuron_ids_gt, responses = load_groundtruth_data(
-        benchmark=benchmark,
+        ground_truth_path
     )
     (
         trial_idx_submitted,
