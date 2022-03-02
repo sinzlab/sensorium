@@ -74,8 +74,6 @@ def get_data_filetree_loader(filename=None, dataloader=None):
         image_ids.append(complete_image_ids[i])
         responses.append(datapoint.responses.cpu().numpy().squeeze())
 
-    #trial_indices = np.array(trial_indices)
-    #image_ids = np.array(image_ids)
     responses = np.stack(responses)
 
     return trial_indices, image_ids, neuron_ids, responses
