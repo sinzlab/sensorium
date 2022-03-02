@@ -80,16 +80,40 @@ def get_data_filetree_loader(filename=None, dataloader=None):
 
 
 def get_data_hub_loader(dataloader):
+    """
+    Extracts necessary data for model evaluation from a dataloader based on hub.
+
+    Args:
+        dataloader (obj): PyTorch Dataloader
+
+    Returns:
+        tuple: Contains:
+               - trial indices (1D array)
+               - image IDs (1D array)
+               - neuron IDs (1D array)
+    """
     image_ids = dataloader.dataset.dataset.image_ids.data().flatten().tolist()
     trial_indices = dataloader.dataset.dataset.trial_indices.data().flatten().tolist()
     neuron_ids = dataloader.dataset.dataset.info["neuron_ids"]
-
     return trial_indices, image_ids, neuron_ids
 
 
 def generate_submission_file(
     trained_model, test_dataloader, data_key=None, path=None, device="cpu"
 ):
+    """
+    Helper function to create the submission .csv file, given a trained model and the dataloader
+
+    Args:
+        trained_model (nn.module): model trained on the respective benchmark data.
+        test_dataloader (PyToch DataLoader): dataloader from the respective benchmark data
+        data_key (str, optional): specifies the data_key, if the model was trained on many datasets
+        path (str, optional): output path of the pickle file
+        device (str): device name to which model and input images are cast to.
+
+    Returns:
+        None. the output .csv file will be saved in the specified path, or relative to the user's notebook.
+    """
     test_predictions = model_predictions(
         trained_model,
         test_dataloader,
