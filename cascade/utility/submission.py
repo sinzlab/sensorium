@@ -121,7 +121,7 @@ def generate_submission_file(
         device=device,
     )
 
-    if issubclass(type(test_dataloader.dataset), FileTreeDataset):
+    if isinstance(test_dataloader.dataset, FileTreeDataset):
         trial_indices, image_ids, neuron_ids, _ = get_data_filetree_loader(
             dataloader=test_dataloader
         )
