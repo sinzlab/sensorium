@@ -33,7 +33,7 @@ def load_submission_data(submission_path):
 
 def load_groundtruth_data(ground_truth_path):
     """
-    Extract necessary data for model evaluation from the ground truth -csv file.
+    Extract necessary data for model evaluation from the ground truth .csv file.
 
     Args:
         ground_truth_path (str): Absolute path to the ground truth .csv file.

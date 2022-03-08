@@ -102,17 +102,17 @@ def generate_submission_file(
     trained_model, test_dataloader, data_key=None, path=None, device="cpu"
 ):
     """
-    Helper function to create the submission .csv file, given a trained model and the dataloader
+    Helper function to create the submission .csv file, given a trained model and the dataloader.
 
     Args:
         trained_model (nn.module): model trained on the respective benchmark data.
         test_dataloader (PyToch DataLoader): dataloader from the respective benchmark data
         data_key (str, optional): specifies the data_key, if the model was trained on many datasets
-        path (str, optional): output path of the pickle file
+        path (str, optional): output path of the .csv file
         device (str): device name to which model and input images are cast to.
 
     Returns:
-        None. the output .csv file will be saved in the specified path, or relative to the user's notebook.
+        None. the output .csv file will be saved in the specified path, or relative to the user's current working directory.
     """
     test_predictions = model_predictions(
         trained_model,
