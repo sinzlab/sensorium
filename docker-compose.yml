@@ -3,20 +3,10 @@ version: '3.4'
 services:
 
   notebook:
-    privileged: true
     image: neural-prediction-challenge
-    build:
-      context: ../
-      dockerfile: ./neural-prediction-challenge/Dockerfile
-      args:
-        - GITHUB_USER=${GITHUB_USER}
-        - GITHUB_TOKEN=${GITHUB_TOKEN}
-        - DEV_SOURCE=${DEV_SOURCE}
+    build: .
     volumes:
       - .:/project
-      - ../neuralpredictors:/src/neuralpredictors
-    env_file:
-      - .env
     entrypoint:
       - jupyter
       - lab
