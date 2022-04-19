@@ -1,7 +1,7 @@
 # Starter-Kit for the SENSORIUM 2022 competition
 Code base for The SENSORIUM competition on predicting large scale mouse primary visual cortex activity.
 
-For more information about the competition, vist our [website](https://fishshell.com/)!
+For more information about the competition, vist our [website](http://www.sensorium2022.net/)!
 
 Competition Data: Will be released on June 1st, 2022
 
