@@ -15,7 +15,6 @@ secrets/
 *.pt
 *.pickle
 *.npy
-*.png
 *.jpg
 *.gif
 .vscode
