@@ -7,7 +7,6 @@ from neuralpredictors.training import eval_state, device_state
 from neuralpredictors.data.datasets import FileTreeDataset
 
 
-# from cascade.utility.scores import model_predictions # why does this return targets?
 def model_predictions(model, dataloader, data_key, device="cpu"):
     """
     computes model predictions for a given dataloader and a model
@@ -47,10 +46,10 @@ def get_data_filetree_loader(filename=None, dataloader=None):
     """
 
     if dataloader is None:
-        dataset_fn = "cascade.datasets.static_loaders"
+        dataset_fn = "sensorium.datasets.static_loaders"
         dataset_config = {
             "paths": filename,
-            "normalize": False,
+            "normalize": True,
             "batch_size": 64,
         }
         dataloaders = get_data(dataset_fn, dataset_config)
