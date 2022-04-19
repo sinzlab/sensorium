@@ -1,7 +1,9 @@
 import ast
+
 import numpy as np
 import pandas as pd
-from cascade.utility.metrics import Metrics
+
+from .utility.metrics import Metrics
 
 
 def load_submission_data(submission_path):
@@ -29,12 +31,12 @@ def load_submission_data(submission_path):
     return trial_idx, image_ids, neuron_ids, predictions
 
 
-def load_groundtruth_data(groundtruth_path):
+def load_groundtruth_data(ground_truth_path):
     """
-    Extract necessary data for model evaluation from the ground truth data file.
+    Extract necessary data for model evaluation from the ground truth .csv file.
 
     Args:
-        groundtruth_path (str): Absolute path to the ground truth data file.
+        ground_truth_path (str): Absolute path to the ground truth .csv file.
 
     Returns:
         tuple: Contains:
@@ -43,7 +45,15 @@ def load_groundtruth_data(groundtruth_path):
                - neuron IDs (1D array)
                - responses (2d array: trials x neurons)
     """
-    raise NotImplementedError()
+    ground_truth_df = pd.read_csv(ground_truth_path)
+    trial_idx = ground_truth_df["trial_indices"].values
+    image_ids = ground_truth_df["image_ids"].values
+    neuron_ids = np.array(ast.literal_eval(ground_truth_df["neuron_ids"].values[0]))
+    responses = np.array(
+        [ast.literal_eval(v) for v in ground_truth_df["responses"].values]
+    )
+
+    return trial_idx, image_ids, neuron_ids, responses
 
 
 def evaluate(submission_path, ground_truth_path):
@@ -70,13 +80,13 @@ def evaluate(submission_path, ground_truth_path):
     metric = Metrics(responses, trial_idx_gt, image_ids_gt, neuron_ids_gt)
 
     output = {}
-    output["Correlation (single trial)"] = metric.correlation_to_single_trials(
+    output["correlation_single"] = metric.correlation_to_single_trials(
         predictions, trial_idx_submitted, neuron_ids_submitted, per_neuron=False
     )
-    output["Correlation (mean)"] = metric.correlation_to_mean_across_repeats(
+    output["correlation_mean"] = metric.correlation_to_mean_across_repeats(
         predictions, trial_idx_submitted, neuron_ids_submitted, per_neuron=False
     )
-    output["FEVE"] = metric.feve(
+    output["feve"] = metric.feve(
         predictions, trial_idx_submitted, neuron_ids_submitted, per_neuron=False
     )
     return output

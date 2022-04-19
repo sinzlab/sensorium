@@ -1,15 +1,16 @@
 from torch import nn
-from nnfabrik.utility.nn_helpers import set_random_seed, get_dims_for_loader_dict
 
+from nnfabrik.utility.nn_helpers import set_random_seed, get_dims_for_loader_dict
 from neuralpredictors.utils import get_module_output
 from neuralpredictors.layers.encoders import FiringRateEncoder
 from neuralpredictors.layers.shifters import MLPShifter, StaticAffine2dShifter
-from neuralpredictors.layers.readouts import MultipleFullGaussian2d
 from neuralpredictors.layers.cores import (
     Stacked2dCore,
     SE2dCore,
     RotationEquivariant2dCore,
 )
+
+from .readouts import MultipleFullGaussian2d
 
 
 class Encoder(FiringRateEncoder):
