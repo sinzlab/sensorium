@@ -27,3 +27,8 @@ logs/
 *.zip
 *.json
 *.log
+*.csv
+*.pth
+notebooks/data
+notebooks/lurz2020
+notebooks/checkpoints
