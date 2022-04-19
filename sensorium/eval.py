@@ -80,13 +80,13 @@ def evaluate(submission_path, ground_truth_path):
     metric = Metrics(responses, trial_idx_gt, image_ids_gt, neuron_ids_gt)
 
     output = {}
-    output["correlation_single"] = metric.correlation_to_single_trials(
+    output["Correlation (single trial)"] = metric.correlation_to_single_trials(
         predictions, trial_idx_submitted, neuron_ids_submitted, per_neuron=False
     )
-    output["correlation_mean"] = metric.correlation_to_mean_across_repeats(
+    output["Correlation (mean)"] = metric.correlation_to_mean_across_repeats(
         predictions, trial_idx_submitted, neuron_ids_submitted, per_neuron=False
     )
-    output["feve"] = metric.feve(
+    output["FEVE"] = metric.feve(
         predictions, trial_idx_submitted, neuron_ids_submitted, per_neuron=False
     )
     return output
