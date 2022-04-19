@@ -12,7 +12,6 @@ secrets/
 *.tar
 *.h5
 *.env
-*.pt
 *.pickle
 *.npy
 *.jpg
@@ -25,8 +24,6 @@ secrets/
 .env/
 logs/
 *.sif
-data/
 *.zip
 *.json
 *.log
-*.csv
