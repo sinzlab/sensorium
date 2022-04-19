@@ -1,23 +1,12 @@
 version: '3.4'
 
 services:
-
   notebook:
-    privileged: true
-    image: neural-prediction-challenge
+    image: sensorium_notebook
     build:
-      context: ../
-      dockerfile: ./neural-prediction-challenge/Dockerfile
-      args:
-        - GITHUB_USER=${GITHUB_USER}
-        - GITHUB_TOKEN=${GITHUB_TOKEN}
-        - DEV_SOURCE=${DEV_SOURCE}
+      context: .
     volumes:
       - .:/project
-      - ../neuralpredictors:/src/neuralpredictors
+      - ./notebooks:/notebooks
     env_file:
       - .env
-    entrypoint:
-      - jupyter
-      - lab
-      - --allow-root
