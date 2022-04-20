@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   notebook:
-    image: sensorium_notebook
+    image: sensorium
     build:
       context: .
     volumes:
@@ -10,3 +10,13 @@ services:
       - ./notebooks:/notebooks
     env_file:
       - .env
+
+  jupyterlab:
+    image: sensorium
+    build:
+      context: .
+    volumes:
+      - .:/project
+      - ./notebooks:/notebooks
+    environment:
+      - JUPYTER_PASSWORD=
