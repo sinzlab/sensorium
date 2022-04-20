@@ -12,10 +12,8 @@ secrets/
 *.tar
 *.h5
 *.env
-*.pt
 *.pickle
 *.npy
-*.png
 *.jpg
 *.gif
 .vscode
@@ -26,8 +24,11 @@ secrets/
 .env/
 logs/
 *.sif
-data/
 *.zip
 *.json
 *.log
 *.csv
+*.pth
+notebooks/data
+notebooks/lurz2020
+notebooks/checkpoints

@@ -1,1 +1,0 @@
-from .submission import generate_submission_file
