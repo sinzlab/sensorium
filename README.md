@@ -26,17 +26,14 @@ Below we provide a step-by-step guide for getting started with the competition.
 
 ## 1. Pre-requisites
 - install [**docker**](https://docs.docker.com/get-docker/) and [**docker-compose**](https://docs.docker.com/compose/install/)
+- install git
 - clone the repo via `git clone https://github.com/sinzlab/sensorium.git`
 
 ## 2. Download neural data
 There are two ways to download the data:
-1. Through shell application
+1. Through shell application (git via gin)
     ```bash
-    # Option 1: login in via gin
-    git clone https://github.com/sinzlab/Lurz_2020_code.git
-    cd Lurz_2020_code/notebooks/data
-    gin login
-    gin get cajal/Lurz2020 # might take a while; fast internet recommended
+    git clone https://gin.g-node.org/cajal/Lurz2020 sensorium/notebooks/data
     ```
 2. Download the data from https://gin.g-node.org/cajal/Lurz2020 and unzip it into `sensorium/notebooks/data`
 
