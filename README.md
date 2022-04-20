@@ -4,7 +4,7 @@
 <hr />
 
 # SENSORIUM 2022 Competition
-
+<hr />
 
 ![plot](./Fig1.png)
 SENSORIUM is a competition on predicting large scale mouse primary visual cortex activity. We will provide large scale datasets of neuronal activity in the visual cortex of mice. Participants will train models on pairs of natural stimuli and recorded neuronal responses, and submit the predicted responses to a set of test images for which responses are withheld.
@@ -47,7 +47,7 @@ docker-compose run -d -p 10101:8888 jupyterlab
 
 ### **Example notebooks**
 We provide four notebooks that illustrate the structure of our data, our baselines models, and how to make a submission to the competition.
-<br>[**Notebook 1**](): Inspecting the Data
-<br>[**Notebook 2**](): Re-train our Baseline Models
-<br>[**Notebook 3**](): Use our API to make a submission to our competition
-<br>[**Notebook 4**](): A Full submission in 5 easy steps using our cloud-based DataLoaders
+<br>[**Notebook 1**](./notebooks/1_inspect_data.ipynb): Inspecting the Data
+<br>[**Notebook 2**](./notebooks/2_model_training.ipynb): Re-train our Baseline Models
+<br>[**Notebook 3**](./notebooks/3_submission_and_evaluation.ipynb): Use our API to make a submission to our competition
+<br>[**Notebook 4**](./notebooks/4_cloud_based_data_demo.ipynb): A Full submission in 4 easy steps using our cloud-based DataLoaders
