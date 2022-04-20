@@ -26,11 +26,7 @@ Below we provide a step-by-step guide for getting started with the competition.
 There are two ways to download the data:
 1. Through shell application
     ```bash
-    # Option 1: login in via gin
-    git clone https://github.com/sinzlab/Lurz_2020_code.git
-    cd Lurz_2020_code/notebooks/data
-    gin login
-    gin get cajal/Lurz2020 # might take a while; fast internet recommended
+    git clone https://gin.g-node.org/cajal/Lurz2020 sensorium/notebooks/data
     ```
 2. Download the data from https://gin.g-node.org/cajal/Lurz2020 and unzip it into `sensorium/notebooks/data`
 
