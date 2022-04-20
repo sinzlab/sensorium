@@ -25,9 +25,8 @@ Below we provide a step-by-step guide for getting started with the competition.
 
 ## 2. Download neural data
 There are two ways to download the data:
-1. Through shell application
+1. Through shell application (git via gin)
     ```bash
-    # Option 1: git via gin
     git clone https://gin.g-node.org/cajal/Lurz2020 sensorium/notebooks/data
     ```
 2. Download the data from https://gin.g-node.org/cajal/Lurz2020 and unzip it into `sensorium/notebooks/data`
