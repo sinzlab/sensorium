@@ -3,7 +3,7 @@ import ast
 import numpy as np
 import pandas as pd
 
-from .utility.metrics import Metrics
+from .metrics import Metrics
 
 
 def load_submission_data(submission_path):

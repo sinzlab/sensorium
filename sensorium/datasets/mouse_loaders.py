@@ -33,17 +33,7 @@ except:
 from neuralpredictors.data.samplers import SubsetSequentialSampler
 from .utility import get_oracle_dataloader
 
-try:
-    from dataport.bcm.static import fetch_non_existing_data
-except ImportError:
 
-    def fetch_non_existing_data(func):
-        return func
-
-    print("dataport not available, will only be able to load data locally")
-
-
-@fetch_non_existing_data
 def static_loader(
     path: str = None,
     batch_size: int = None,
