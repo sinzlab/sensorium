@@ -70,28 +70,3 @@ def get_oracle_dataloader(
     dataloaders = {}
     dataloaders[data_key] = DataLoader(dat, batch_sampler=sampler)
     return dataloaders
-
-
-def get_validation_split(n_images, train_frac, seed):
-    """
-    Splits the total number of images into train and test set.
-    This ensures that in every session, the same train and validation images are being used.
-
-    Args:
-        n_images: Total number of images. These will be plit into train and validation set
-        train_frac: fraction of images used for the training set
-        seed: random seed
-
-    Returns: Two arrays, containing image IDs of the whole imageset, split into train and validation
-
-    """
-    if seed:
-        np.random.seed(seed)
-    train_idx, val_idx = np.split(
-        np.random.permutation(int(n_images)), [int(n_images * train_frac)]
-    )
-    assert not np.any(
-        np.isin(train_idx, val_idx)
-    ), "train_set and val_set are overlapping sets"
-
-    return train_idx, val_idx
