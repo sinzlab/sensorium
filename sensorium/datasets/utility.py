@@ -2,7 +2,9 @@ from torch.utils.data import DataLoader
 import numpy as np
 from neuralpredictors.data.samplers import RepeatsBatchSampler
 
+#TODO: Add function to get cell_motor_coordinates from dataloader
 
+#TODO: get rid of this function altogether
 def get_oracle_dataloader(
     dat,
     toy_data=False,
