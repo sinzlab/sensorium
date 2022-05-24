@@ -1,12 +1,25 @@
 import copy
 
-#TODO: add docstring, add cell motor coord function
 def prepare_grid(grid_mean_predictor, dataloaders):
     """
+    Utility function for using the neurons cortical coordinates
+    to guide the readout locations in image space.
+
     Args:
-        grid_mean_predictor:
-        dataloaders:
+        grid_mean_predictor (dict): config dictionary, for example:
+          {'type': 'cortex',
+           'input_dimensions': 2,
+           'hidden_layers': 1,
+           'hidden_features': 30,
+           'final_tanh': True}
+
+        dataloaders: a dictionary of dataloaders, one PyTorch DataLoader per session
+            in the format {'data_key': dataloader object, .. }
     Returns:
+        grid_mean_predictor (dict): config dictionary
+        grid_mean_predictor_type (str): type of the information that is being used for
+            the grid positition estimator
+        source_grids (dict): a grid of points for each data_key
 
     """
     if grid_mean_predictor is None:
