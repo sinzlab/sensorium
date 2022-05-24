@@ -10,13 +10,3 @@ services:
       - ./notebooks:/notebooks
     environment:
       - JUPYTER_PASSWORD=
-
-  notebook:
-    image: sensorium
-    build:
-      context: .
-    volumes:
-      - .:/project
-      - ./notebooks:/notebooks
-    env_file:
-      - .env
