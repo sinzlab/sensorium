@@ -7,31 +7,17 @@ from torch.utils.data.sampler import SubsetRandomSampler
 from nnfabrik.utility.nn_helpers import set_random_seed
 from neuralpredictors.data.datasets import StaticImageSet, FileTreeDataset
 
-#TODO: clean up imports
-try:
-    from neuralpredictors.data.transforms import (
-        Subsample,
-        ToTensor,
-        NeuroNormalizer,
-        AddBehaviorAsChannels,
-        SelectInputChannel,
-        ScaleInputs,
-        AddPupilCenterAsChannels,
-        AddPositionAsChannels,
-        ReshapeImages,
-    )
-except:
-    from neuralpredictors.data.transforms import (
-        Subsample,
-        ToTensor,
-        NeuroNormalizer,
-        AddBehaviorAsChannels,
-        SelectInputChannel,
-    )
+from neuralpredictors.data.transforms import (
+    Subsample,
+    ToTensor,
+    NeuroNormalizer,
+    AddBehaviorAsChannels,
+    SelectInputChannel,
+    ScaleInputs,
+    AddPupilCenterAsChannels,
+)
 
 from neuralpredictors.data.samplers import SubsetSequentialSampler
-from .utility import get_oracle_dataloader
-
 
 def static_loader(
     path: str = None,
