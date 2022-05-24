@@ -30,6 +30,7 @@ def stacked_core_full_gauss_readout(
     hidden_dilation=1,
     laplace_padding=None,
     input_regularizer="LaplaceL2norm",
+    use_avg_reg=False,
     init_mu_range=0.2,
     init_sigma=1.0,
     readout_bias=True,
@@ -58,8 +59,6 @@ def stacked_core_full_gauss_readout(
         dataloaders: a dictionary of dataloaders, one loader per session
             in the format {'data_key': dataloader object, .. }
         seed: random seed
-        elu_offset: Offset for the output non-linearity [F.elu(x + self.offset)]
-        isotropic: whether the Gaussian readout should use isotropic Gaussians or not
         grid_mean_predictor: if not None, needs to be a dictionary of the form
             {
             'type': 'cortex',
@@ -100,8 +99,7 @@ def stacked_core_full_gauss_readout(
     set_random_seed(seed)
     grid_mean_predictor, grid_mean_predictor_type, source_grids = prepare_grid(grid_mean_predictor, dataloaders)
 
-    #TODO use Stacked2dCore instead
-    core = SE2dCore(
+    core = Stacked2dCore(
         input_channels=core_input_channels,
         hidden_channels=hidden_channels,
         input_kern=input_kern,
@@ -122,6 +120,7 @@ def stacked_core_full_gauss_readout(
         linear=linear,
         attention_conv=attention_conv,
         hidden_padding=hidden_padding,
+        use_avg_reg=use_avg_reg,
     )
 
     in_shapes_dict = {
