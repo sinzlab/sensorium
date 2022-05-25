@@ -11,11 +11,11 @@ Join our challenge and compete for the best neural predictive model!
 For more information about the competition, vist our [website](http://www.sensorium2022.net/).
 
 # Important Dates
-**01.06.2022**: Start of the competition and data release. The data structure is similar to the data available at https://gin.g-node.org/cajal/Lurz2020.
-<br>**15.10.2022**: Submission deadline.
-<br>**22.10.2022**: Validation of all submitted scores completed. Rank 1-3 in both competition tracks are contacted to provide the code for their submission.
-<br>**05.11.2022**: Deadline for top-ranked entries to provide the code for their submission.
-<br>**15.11.2022**: Winners contacted to contribute to the competition summary write-up.
+**June 15, 2022**: Start of the competition and data release. The data structure is similar to the data available at https://gin.g-node.org/cajal/Lurz2020.
+<br>**Oct 15, 2022**: Submission deadline.
+<br>**Oct 22, 2022**: Validation of all submitted scores completed. Rank 1-3 in both competition tracks are contacted to provide the code for their submission.
+<br>**Nov 5, 2022**: Deadline for top-ranked entries to provide the code for their submission.
+<br>**Nov 15, 2022**: Winners contacted to contribute to the competition summary write-up.
 
 # Starter-kit
 
