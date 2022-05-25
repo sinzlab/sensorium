@@ -11,37 +11,7 @@ from neuralpredictors.layers.cores import (
 )
 
 from .readouts import MultipleFullGaussian2d
-
-
-class Encoder(FiringRateEncoder):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def forward(
-        self,
-        *args,
-        targets=None,
-        data_key=None,
-        behavior=None,
-        pupil_center=None,
-        trial_idx=None,
-        shift=None,
-        detach_core=False,
-        **kwargs
-    ):
-        x = self.core(args[0])
-        if detach_core:
-            x = x.detach()
-
-        if self.shifter and pupil_center is not None:
-            shift = self.shifter[data_key](pupil_center, trial_idx)
-
-        x = self.readout(x, data_key=data_key, shift=shift, **kwargs)
-
-        if self.modulator and behavior is not None:
-            x = self.modulator[data_key](x, behavior=behavior)
-
-        return nn.functional.elu(x + self.offset) + 1
+from .utility import prepare_grid
 
 
 def stacked_core_full_gauss_readout(
@@ -60,6 +30,7 @@ def stacked_core_full_gauss_readout(
     hidden_dilation=1,
     laplace_padding=None,
     input_regularizer="LaplaceL2norm",
+    use_avg_reg=False,
     init_mu_range=0.2,
     init_sigma=1.0,
     readout_bias=True,
@@ -88,8 +59,6 @@ def stacked_core_full_gauss_readout(
         dataloaders: a dictionary of dataloaders, one loader per session
             in the format {'data_key': dataloader object, .. }
         seed: random seed
-        elu_offset: Offset for the output non-linearity [F.elu(x + self.offset)]
-        isotropic: whether the Gaussian readout should use isotropic Gaussians or not
         grid_mean_predictor: if not None, needs to be a dictionary of the form
             {
             'type': 'cortex',
@@ -126,9 +95,11 @@ def stacked_core_full_gauss_readout(
         if isinstance(input_channels, dict)
         else input_channels[0]
     )
-    set_random_seed(seed)
 
-    core = SE2dCore(
+    set_random_seed(seed)
+    grid_mean_predictor, grid_mean_predictor_type, source_grids = prepare_grid(grid_mean_predictor, dataloaders)
+
+    core = Stacked2dCore(
         input_channels=core_input_channels,
         hidden_channels=hidden_channels,
         input_kern=input_kern,
@@ -149,6 +120,7 @@ def stacked_core_full_gauss_readout(
         linear=linear,
         attention_conv=attention_conv,
         hidden_padding=hidden_padding,
+        use_avg_reg=use_avg_reg,
     )
 
     in_shapes_dict = {
@@ -166,6 +138,8 @@ def stacked_core_full_gauss_readout(
         gamma_readout=gamma_readout,
         gauss_type=gauss_type,
         grid_mean_predictor=grid_mean_predictor,
+        grid_mean_predictor_type=grid_mean_predictor_type,
+        source_grids=source_grids,
     )
 
     if shifter is True:
@@ -187,7 +161,7 @@ def stacked_core_full_gauss_readout(
                 gamma_shifter=gamma_shifter,
             )
 
-    model = Encoder(
+    model = FiringRateEncoder(
         core=core,
         readout=readout,
         shifter=shifter,

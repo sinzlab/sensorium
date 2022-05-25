@@ -4,35 +4,20 @@ import numpy as np
 import os
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
-
 from nnfabrik.utility.nn_helpers import set_random_seed
 from neuralpredictors.data.datasets import StaticImageSet, FileTreeDataset
 
-try:
-    from neuralpredictors.data.transforms import (
-        Subsample,
-        ToTensor,
-        NeuroNormalizer,
-        AddBehaviorAsChannels,
-        SelectInputChannel,
-        ScaleInputs,
-        AddPupilCenterAsChannels,
-        AddPositionAsChannels,
-        ReshapeImages,
-    )
-except:
-    from neuralpredictors.data.transforms import (
-        Subsample,
-        ToTensor,
-        NeuroNormalizer,
-        AddBehaviorAsChannels,
-        SelectInputChannel,
-    )
-
+from neuralpredictors.data.transforms import (
+    Subsample,
+    ToTensor,
+    NeuroNormalizer,
+    AddBehaviorAsChannels,
+    SelectInputChannel,
+    ScaleInputs,
+    AddPupilCenterAsChannels,
+)
 
 from neuralpredictors.data.samplers import SubsetSequentialSampler
-from .utility import get_oracle_dataloader
-
 
 def static_loader(
     path: str = None,
@@ -219,7 +204,7 @@ def static_loader(
     elif "GrayImageNet" in path:
         data_key = path.split("static")[-1].split("-GrayImageNet")[0]
     else:
-        data_key = f"{dat.neurons.animal_id[0]}-{dat.neurons.session[0]}-{dat.neurons.scan_idx[0]}"
+        data_key = f"{dat.neurons.animal_ids[0]}-{dat.neurons.sessions[0]}-{dat.neurons.scan_idx[0]}"
 
     if return_test_sampler:
         dataloader = get_oracle_dataloader(
