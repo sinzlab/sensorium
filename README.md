@@ -47,4 +47,4 @@ We provide four notebooks that illustrate the structure of our data, our baselin
 <br>[**Notebook 1**](./notebooks/1_inspect_data.ipynb): Inspecting the Data
 <br>[**Notebook 2**](./notebooks/2_model_training.ipynb): Re-train our Baseline Models
 <br>[**Notebook 3**](./notebooks/3_submission_and_evaluation.ipynb): Use our API to make a submission to our competition
-<br>[**Notebook 4**](./notebooks/4_cloud_based_data_demo.ipynb): A Full submission in 4 easy steps using our cloud-based DataLoaders (using toy data)
+<br>[**Notebook 4**](./notebooks/4_cloud_based_data_demo.ipynb): A full submission in 4 easy steps using our cloud-based DataLoaders (using toy data)
