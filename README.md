@@ -8,7 +8,7 @@ SENSORIUM is a competition on predicting large scale mouse primary visual cortex
 
 Join our challenge and compete for the best neural predictive model!
 
-For more information about the competition, vist our [website](http://www.sensorium2022.net/).
+For more information about the competition, vist our [website](https://sensorium2022.net/).
 
 # Important Dates
 **June 15, 2022**: Start of the competition and data release. The data structure is similar to the data available at https://gin.g-node.org/cajal/Lurz2020.
