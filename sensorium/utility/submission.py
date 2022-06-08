@@ -16,12 +16,16 @@ def model_predictions(model, dataloader, data_key, device="cpu"):
     output = torch.empty(0)
     for batch in dataloader:
         images = batch[0] if not isinstance(batch, dict) else batch["inputs"]
+
+        batch_kwargs = batch._asdict() if not isinstance(batch, dict) else batch
+        batch_kwargs = {k: v.to(device) for k, v in batch_kwargs.items()}
+
         with torch.no_grad():
             with device_state(model, device):
                 output = torch.cat(
                     (
                         output,
-                        (model(images.to(device), data_key=data_key).detach().cpu()),
+                        (model(images.to(device), data_key=data_key, **batch_kwargs).detach().cpu()),
                     ),
                     dim=0,
                 )
