@@ -27,12 +27,8 @@ Below we provide a step-by-step guide for getting started with the competition.
 - clone the repo via `git clone https://github.com/sinzlab/sensorium.git`
 
 ## 2. Download neural data
-There are two ways to download the data:
-1. Through shell application (git via gin)
-    ```bash
-    git clone https://gin.g-node.org/cajal/Lurz2020 sensorium/notebooks/data
-    ```
-2. Download the data from https://gin.g-node.org/cajal/Lurz2020 and unzip it into `sensorium/notebooks/data`
+
+You can download the data from https://gin.g-node.org/cajal/Lurz2020 and unzip it into `sensorium/notebooks/data`
 
 ## 3. Run the example notebooks
 
