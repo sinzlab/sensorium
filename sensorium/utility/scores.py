@@ -152,7 +152,7 @@ def get_signal_correlations(
     return correlations if per_neuron else correlations.mean()
 
 
-def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True):
+def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True, fev_threshold=0.15):
     """
     Compute the fraction of explainable variance explained per neuron.
 
@@ -162,6 +162,7 @@ def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True):
         tier (str): specify the tier for which fev should be computed.
         device (str, optional): device to compute on. Defaults to "cpu".
         per_neuron (bool, optional): whether to return the results per neuron or averaged across neurons. Defaults to True.
+        fev_threshold (float): the FEV threshold under which a neuron will not be ignored. 
 
     Returns:
         np.ndarray: the fraction of explainable variance explained.
@@ -174,11 +175,15 @@ def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True):
         _, predictions = model_predictions(
             model, dataloader, data_key=data_key, device=device
         )
-        feve_val = fev(
+        fev_val, feve_val = fev(
             split_images(responses, image_ids),
             split_images(predictions, image_ids),
-            return_exp_var=False,
+            return_exp_var=True,
         )
+
+        # ignore neurons below FEV threshold
+        feve_val = feve_val[fev_val > 0.15]
+
         return feve_val if per_neuron else feve_val.mean()
 
 
