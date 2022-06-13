@@ -182,7 +182,7 @@ def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True, fev_thresho
         )
 
         # ignore neurons below FEV threshold
-        feve_val = feve_val[fev_val > fev_threshold]
+        feve_val = feve_val[fev_val >= fev_threshold]
 
         return feve_val if per_neuron else feve_val.mean()
 

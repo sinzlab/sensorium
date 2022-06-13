@@ -200,6 +200,6 @@ class Metrics:
         )
 
         # ignore neurons below FEV threshold
-        feve_val = feve_val[fev_val > fev_threshold]
+        feve_val = feve_val[fev_val >= fev_threshold]
 
         return feve_val if per_neuron else feve_val.mean()
