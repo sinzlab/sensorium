@@ -205,7 +205,7 @@ def static_loader(
 
     # subsample images
     dataloaders = {}
-    keys = [tier] if tier else ["train", "validation", "test"]
+    keys = [tier] if tier else ["train", "validation", "test", "final_test"]
     tier_array = dat.trial_info.tiers if file_tree else dat.tiers
 
     dat_info = dat.info if not file_tree else dat.trial_info
@@ -340,7 +340,7 @@ def static_loaders(
     if seed is not None:
         set_random_seed(seed)
     dls = OrderedDict({})
-    keys = [tier] if tier else ["train", "validation", "test"]
+    keys = [tier] if tier else ["train", "validation", "test", "final_test"]
     for key in keys:
         dls[key] = OrderedDict({})
     neuron_ids = [neuron_ids] if neuron_ids is None else neuron_ids
