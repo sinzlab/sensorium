@@ -390,7 +390,5 @@ def static_loaders(
         )
         for k in dls:
             dls[k][out[0]] = out[1][k]
-        else:
-            dls.update(out)
 
     return dls
