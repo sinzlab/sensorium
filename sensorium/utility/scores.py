@@ -68,7 +68,7 @@ def model_predictions(model, dataloader, data_key, device="cpu"):
 
 
 def get_correlations(
-    model, dataloaders, device="cpu", as_dict=False, per_neuron=True, **kwargs
+    model, dataloaders, tier="test", device="cpu", as_dict=False, per_neuron=True, **kwargs
 ):
     """
     Computes single-trial correlation between model prediction and true responses
@@ -111,7 +111,7 @@ def get_correlations(
 
 
 def get_signal_correlations(
-    model, dataloaders, device="cpu", as_dict=False, per_neuron=True
+    model, dataloaders, tier, device="cpu", as_dict=False, per_neuron=True
 ):
     """
     Same as `get_correlations` but first responses and predictions are averaged across repeats
@@ -119,9 +119,9 @@ def get_signal_correlations(
     the means across repeats.
     """
     correlations = {}
-    for data_key, dataloader in dataloaders.items():
+    for data_key, dataloader in dataloaders[tier].items():
         trial_indices, image_ids, neuron_ids, responses = get_data_filetree_loader(
-            dataloader=dataloader
+            dataloader=dataloader, tier=tier
         )
         _, predictions = model_predictions(
             model, dataloader, data_key=data_key, device=device
@@ -152,32 +152,38 @@ def get_signal_correlations(
     return correlations if per_neuron else correlations.mean()
 
 
-def get_fev(model, dataloaders, device="cpu", per_neuron=True):
+def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True, fev_threshold=0.15):
     """
     Compute the fraction of explainable variance explained per neuron.
 
     Args:
         model (torch.nn.Module): Model used to predict responses.
         dataloaders (dict): dict of test set torch dataloaders.
+        tier (str): specify the tier for which fev should be computed.
         device (str, optional): device to compute on. Defaults to "cpu".
         per_neuron (bool, optional): whether to return the results per neuron or averaged across neurons. Defaults to True.
+        fev_threshold (float): the FEV threshold under which a neuron will not be ignored. 
 
     Returns:
         np.ndarray: the fraction of explainable variance explained.
     """
     correlations = {}
-    for data_key, dataloader in dataloaders.items():
+    for data_key, dataloader in dataloaders[tier].items():
         trial_indices, image_ids, neuron_ids, responses = get_data_filetree_loader(
-            dataloader=dataloader
+            dataloader=dataloader, tier=tier
         )
         _, predictions = model_predictions(
             model, dataloader, data_key=data_key, device=device
         )
-        feve_val = fev(
+        fev_val, feve_val = fev(
             split_images(responses, image_ids),
             split_images(predictions, image_ids),
-            return_exp_var=False,
+            return_exp_var=True,
         )
+
+        # ignore neurons below FEV threshold
+        feve_val = feve_val[fev_val >= fev_threshold]
+
         return feve_val if per_neuron else feve_val.mean()
 
 

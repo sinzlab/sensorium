@@ -167,6 +167,7 @@ class Metrics:
         trial_idx_submitted,
         neuron_id_submitted,
         per_neuron=False,
+        fev_threshold=0.15,
     ):
         """
         Compute fraction of explainable variance explained.
@@ -192,9 +193,13 @@ class Metrics:
         # check if trial indices and neuron ids are the same as the reference
         self.check_equality(trial_idx, neuron_ids)
 
-        feve_val = fev(
+        fev_val, feve_val = fev(
             self.split_images(self.responses),
             self.split_images(predictions),
-            return_exp_var=False,
+            return_exp_var=True,
         )
+
+        # ignore neurons below FEV threshold
+        feve_val = feve_val[fev_val >= fev_threshold]
+
         return feve_val if per_neuron else feve_val.mean()
