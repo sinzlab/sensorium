@@ -127,8 +127,8 @@ def model_predictions(model, dataloader, data_key, device="cpu"):
     return target.numpy(), output.numpy()
 
 
-def get_signal_correlations(
-    model, dataloaders, device="cpu", as_dict=False, per_neuron=True
+def get_correlations(
+    model, dataloaders, tier="test", device="cpu", as_dict=False, per_neuron=True, **kwargs
 ):
     """
     Returns correlation between model outputs and average responses over repeated trials
@@ -203,6 +203,99 @@ def get_correlations(
             else np.mean(np.hstack([v for v in correlations.values()]))
         )
     return correlations
+
+
+def get_signal_correlations(
+    model, dataloaders, tier, device="cpu", as_dict=False, per_neuron=True
+):
+    """
+    Same as `get_correlations` but first responses and predictions are averaged across repeats
+    and then the correlation is computed. In other words, the correlation is computed between
+    the means across repeats.
+    """
+    correlations = {}
+    for data_key, dataloader in dataloaders[tier].items():
+        trial_indices, image_ids, neuron_ids, responses = get_data_filetree_loader(
+            dataloader=dataloader, tier=tier
+        )
+        _, predictions = model_predictions(
+            model, dataloader, data_key=data_key, device=device
+        )
+
+        repeats_responses = split_images(responses, image_ids)
+        repeats_predictions = split_images(predictions, image_ids)
+
+        mean_responses, mean_predictions = [], []
+        for repeat_responses, repeat_predictions in zip(
+            repeats_responses, repeats_predictions
+        ):
+            mean_responses.append(repeat_responses.mean(axis=0, keepdims=True))
+            mean_predictions.append(repeat_predictions.mean(axis=0, keepdims=True))
+
+        mean_responses = np.vstack(mean_responses)
+        mean_predictions = np.vstack(mean_predictions)
+
+        correlations[data_key] = corr(mean_responses, mean_predictions, axis=0)
+
+    if not as_dict:
+        correlations = (
+            np.hstack([v for v in correlations.values()])
+            if per_neuron
+            else np.mean(np.hstack([v for v in correlations.values()]))
+        )
+
+    return correlations if per_neuron else correlations.mean()
+
+
+def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True):
+    """
+    Compute the fraction of explainable variance explained per neuron.
+
+    Args:
+        model (torch.nn.Module): Model used to predict responses.
+        dataloaders (dict): dict of test set torch dataloaders.
+        tier (str): specify the tier for which fev should be computed.
+        device (str, optional): device to compute on. Defaults to "cpu".
+        per_neuron (bool, optional): whether to return the results per neuron or averaged across neurons. Defaults to True.
+
+    Returns:
+        np.ndarray: the fraction of explainable variance explained.
+    """
+    correlations = {}
+    for data_key, dataloader in dataloaders[tier].items():
+        trial_indices, image_ids, neuron_ids, responses = get_data_filetree_loader(
+            dataloader=dataloader, tier=tier
+        )
+        _, predictions = model_predictions(
+            model, dataloader, data_key=data_key, device=device
+        )
+        feve_val = fev(
+            split_images(responses, image_ids),
+            split_images(predictions, image_ids),
+            return_exp_var=False,
+        )
+        return feve_val if per_neuron else feve_val.mean()
+
+
+def get_fraction_oracles(model, dataloaders, device="cpu", conservative=False):
+    dataloaders = dataloaders["test"] if "test" in dataloaders else dataloaders
+    if conservative:
+        oracles = get_get_oracles_correctedoracles_corrected(
+            dataloaders=dataloaders, as_dict=False, per_neuron=True
+        )
+    else:
+        oracles = get_oracles(dataloaders=dataloaders, as_dict=False, per_neuron=True)
+    test_correlation = get_correlation(
+        model=model,
+        dataloaders=dataloaders,
+        device=device,
+        as_dict=False,
+        per_neuron=True,
+    )
+    oracle_performance, _, _, _ = np.linalg.lstsq(
+        np.hstack(oracles)[:, np.newaxis], np.hstack(test_correlation)
+    )
+    return oracle_performance[0]
 
 
 def get_poisson_loss(
