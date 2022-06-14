@@ -83,7 +83,7 @@ def evaluate(submission_path, ground_truth_path):
     output["Single Trial Correlation"] = metric.correlation_to_single_trials(
         predictions, trial_idx_submitted, neuron_ids_submitted, per_neuron=False
     )
-    output["Average Correlation"] = metric.correlation_to_mean_across_repeats(
+    output["Correlation to Average"] = metric.correlation_to_mean_across_repeats(
         predictions, trial_idx_submitted, neuron_ids_submitted, per_neuron=False
     )
     output["FEVE"] = metric.feve(
