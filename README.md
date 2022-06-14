@@ -28,7 +28,7 @@ Below we provide a step-by-step guide for getting started with the competition.
 
 ## 2. Download neural data
 
-You can download the data from https://gin.g-node.org/cajal/Lurz2020 and unzip it into `sensorium/notebooks/data`
+You can download the data from [https://gin.g-node.org/cajal/Sensorium2022](https://gin.g-node.org/cajal/Sensorium2022) and unzip it into `sensorium/notebooks/data`
 
 ## 3. Run the example notebooks
 
