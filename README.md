@@ -11,7 +11,7 @@ Join our challenge and compete for the best neural predictive model!
 For more information about the competition, vist our [website](https://sensorium2022.net/).
 
 # Important Dates
-**June 15, 2022**: Start of the competition and data release. The data structure is similar to the data available at https://gin.g-node.org/cajal/Lurz2020.
+**June 20, 2022**: Start of the competition and data release. The data structure is similar to the data available at https://gin.g-node.org/cajal/Lurz2020.
 <br>**Oct 15, 2022**: Submission deadline.
 <br>**Oct 22, 2022**: Validation of all submitted scores completed. Rank 1-3 in both competition tracks are contacted to provide the code for their submission.
 <br>**Nov 5, 2022**: Deadline for top-ranked entries to provide the code for their submission.
@@ -28,7 +28,8 @@ Below we provide a step-by-step guide for getting started with the competition.
 
 ## 2. Download neural data
 
-You can download the data from [https://gin.g-node.org/cajal/Sensorium2022](https://gin.g-node.org/cajal/Sensorium2022) and unzip it into `sensorium/notebooks/data`
+You can download the data from [https://gin.g-node.org/cajal/Sensorium2022](https://gin.g-node.org/cajal/Sensorium2022) and place it in `sensorium/notebooks/data`.
+**Note:** Downloading the files all at once as a directory does lead to unfortunate errors. Thus, all datastes have to be downloadede individually.
 
 ## 3. Run the example notebooks
 

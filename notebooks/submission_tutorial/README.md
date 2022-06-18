@@ -1,6 +1,5 @@
-# How to make Submission
+# How to make a Submission
 
-Below we provide a brief explanation of our Baseline models
-
-- add links to publications (Lurz, Bashiri, Franke)
-- add link to Lurz Video
+- explain API
+- explain the logic behind storing the responses
+- stress the fact that responses in ground truth are standardized

@@ -1,6 +1,21 @@
 # Neural Predictive Model Tutorial
 
-Below we provide a brief explanation of our Baseline models
+Here, we provide a brief overview of our neural predictive model.
 
-- add links to publications (Lurz, Bashiri, Franke)
-- add link to Lurz Video
+For our competition, we have trained two baselines:
+- Our state-of-the-art CNN model
+- a simple linear-nonlinear (LN) model
+
+Have a look our demo notebook as an introduction as to how our [**CNN model**](./0_baseline_cnn.ipynb) works.
+
+### Video Explanation
+
+- [**This Video**](https://youtu.be/xwLMO8nVvxs?t=220) goes into the details of how our model is built (prepared for ICLR 2021).
+
+
+
+### References
+- [Generalization in data-driven models of primary visual cortex.](https://www.biorxiv.org/content/10.1101/2020.10.05.326256v2)
+  - the ICLR publication corresponding to the video above, which
+- [Behavioral state tunes mouse vision to ethological features through pupil dilation](https://www.biorxiv.org/content/10.1101/2021.09.03.458870v2.full)
+  - Uses a similar architecture as the CNN above, but also utilizes the behavioral variables to train the model. The same techniques are used in our baseline models for the **Sensorium+** track.
