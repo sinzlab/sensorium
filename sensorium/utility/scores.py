@@ -48,9 +48,7 @@ def model_predictions(model, dataloader, data_key, device="cpu"):
         batch_kwargs = batch._asdict() if not isinstance(batch, dict) else batch
 
         with torch.no_grad():
-            with device_state(model, device) if not is_ensemble_function(
-                model
-            ) else contextlib.nullcontext():
+            with device_state(model, device):
                 output = torch.cat(
                     (
                         output,
@@ -167,7 +165,6 @@ def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True, fev_thresho
     Returns:
         np.ndarray: the fraction of explainable variance explained.
     """
-    correlations = {}
     for data_key, dataloader in dataloaders[tier].items():
         trial_indices, image_ids, neuron_ids, responses = get_data_filetree_loader(
             dataloader=dataloader, tier=tier
@@ -185,27 +182,6 @@ def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True, fev_thresho
         feve_val = feve_val[fev_val >= fev_threshold]
 
         return feve_val if per_neuron else feve_val.mean()
-
-
-def get_fraction_oracles(model, dataloaders, device="cpu", conservative=False):
-    dataloaders = dataloaders["test"] if "test" in dataloaders else dataloaders
-    if conservative:
-        oracles = get_get_oracles_correctedoracles_corrected(
-            dataloaders=dataloaders, as_dict=False, per_neuron=True
-        )
-    else:
-        oracles = get_oracles(dataloaders=dataloaders, as_dict=False, per_neuron=True)
-    test_correlation = get_correlation(
-        model=model,
-        dataloaders=dataloaders,
-        device=device,
-        as_dict=False,
-        per_neuron=True,
-    )
-    oracle_performance, _, _, _ = np.linalg.lstsq(
-        np.hstack(oracles)[:, np.newaxis], np.hstack(test_correlation)
-    )
-    return oracle_performance[0]
 
 
 def get_poisson_loss(
