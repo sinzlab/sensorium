@@ -46,8 +46,8 @@ We provide the datasets in the .zip format. Unzipping them will create two folde
           - The *test* set is used to evaluate the model preformance. In the competition datasets, the responses to all *test* images is withheld.
           - In the 2 competition datasets, there is the additional tier *final_test*, which contains 100 images and their repetitions. The model performance on these *tiers* will be used to determine the winner of the competition. 
 
-    - `trial_idx.npy`: contains a unique index for each trial. While the true trial index is available for the “pre-training” datasets, it is hidden (i.e. hashed) in the competition datasets. 
-      - The *trial_idx* corresponds to the actual order of image presentations to the mouse. We hide the *trial_idx* in the competition scans (i.e. by hashing them).
+        - `trial_idx.npy`: contains a unique index for each trial. While the true trial index is available for the “pre-training” datasets, it is hidden (i.e. hashed) in the competition datasets. 
+          - The *trial_idx* corresponds to the actual order of image presentations to the mouse. We hide the *trial_idx* in the competition scans (i.e. by hashing them).
 
 
 # Competition Datasets (Sensorium & Sensorium+)
