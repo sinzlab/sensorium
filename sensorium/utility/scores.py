@@ -145,7 +145,7 @@ def get_signal_correlations(
     return correlations if per_neuron else correlations.mean()
 
 
-def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True, fev_threshold=0.15):
+def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True, fev_threshold=0.15, as_dict=True, ):
     """
     Compute the fraction of explainable variance explained per neuron.
 
@@ -155,11 +155,12 @@ def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True, fev_thresho
         tier (str): specify the tier for which fev should be computed.
         device (str, optional): device to compute on. Defaults to "cpu".
         per_neuron (bool, optional): whether to return the results per neuron or averaged across neurons. Defaults to True.
-        fev_threshold (float): the FEV threshold under which a neuron will not be ignored. 
+        fev_threshold (float): the FEV threshold under which a neuron will not be ignored.
 
     Returns:
         np.ndarray: the fraction of explainable variance explained.
     """
+    feves = {}
     for data_key, dataloader in dataloaders[tier].items():
         trial_indices, image_ids, neuron_ids, responses = get_data_filetree_loader(
             dataloader=dataloader, tier=tier
@@ -176,7 +177,16 @@ def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True, fev_thresho
         # ignore neurons below FEV threshold
         feve_val = feve_val[fev_val >= fev_threshold]
 
-        return feve_val if per_neuron else feve_val.mean()
+        feves[data_key] = feve_val
+
+    if not as_dict:
+        feves = (
+            np.hstack([v for v in feves.values()])
+            if per_neuron
+            else np.mean(np.hstack([v for v in feves.values()]))
+        )
+
+    return feves if per_neuron else feves.mean()
 
 
 def get_poisson_loss(
