@@ -1,12 +1,10 @@
-import types
-import contextlib
 import warnings
-from itertools import combinations
 import numpy as np
 import torch
+
 from neuralpredictors.measures.np_functions import corr, fev
 from neuralpredictors.training import eval_state, device_state
-from .measure_helpers import get_subset_of_repeats, is_ensemble_function
+
 from .submission import get_data_filetree_loader
 
 
@@ -82,22 +80,19 @@ def get_correlations(
         dict or np.ndarray: contains the correlation values.
     """
     correlations = {}
-    with eval_state(model) if not is_ensemble_function(
-        model
-    ) else contextlib.nullcontext():
-        for k, v in dataloaders.items():
-            target, output = model_predictions(
-                dataloader=v, model=model, data_key=k, device=device
-            )
-            correlations[k] = corr(target, output, axis=0)
+    for k, v in dataloaders[tier].items():
+        target, output = model_predictions(
+            dataloader=v, model=model, data_key=k, device=device
+        )
+        correlations[k] = corr(target, output, axis=0)
 
-            if np.any(np.isnan(correlations[k])):
-                warnings.warn(
-                    "{}% NaNs , NaNs will be set to Zero.".format(
-                        np.isnan(correlations[k]).mean() * 100
-                    )
+        if np.any(np.isnan(correlations[k])):
+            warnings.warn(
+                "{}% NaNs , NaNs will be set to Zero.".format(
+                    np.isnan(correlations[k]).mean() * 100
                 )
-            correlations[k][np.isnan(correlations[k])] = 0
+            )
+        correlations[k][np.isnan(correlations[k])] = 0
 
     if not as_dict:
         correlations = (
@@ -194,16 +189,12 @@ def get_poisson_loss(
     eps=1e-12,
 ):
     poisson_loss = {}
-    with torch.no_grad():
-        with eval_state(model) if not is_ensemble_function(
-            model
-        ) else contextlib.nullcontext():
-            for k, v in dataloaders.items():
-                target, output = model_predictions(
-                    dataloader=v, model=model, data_key=k, device=device
-                )
-                loss = output - target * np.log(output + eps)
-                poisson_loss[k] = np.mean(loss, axis=0) if avg else np.sum(loss, axis=0)
+    for k, v in dataloaders.items():
+        target, output = model_predictions(
+            dataloader=v, model=model, data_key=k, device=device
+        )
+        loss = output - target * np.log(output + eps)
+        poisson_loss[k] = np.mean(loss, axis=0) if avg else np.sum(loss, axis=0)
     if as_dict:
         return poisson_loss
     else:
