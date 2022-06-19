@@ -60,4 +60,3 @@ The datasets `26872-17-20` (Sensorium) `27204-5-13` (Sensorium+) are different f
 - The responses to all *test* or *final_test* images is withheld (the response arrays are present, but zeroed out)
 - Information about order of trials is withheld (i.e. the *trial_idx* is hashed)
 - For **Sensorium**, the behavioral variables and eye position are withheld (arrays are present, but zeroed out)
-- 
