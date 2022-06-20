@@ -14,13 +14,13 @@ We provide the datasets in the .zip format. Unzipping them will create two folde
 - **meta:** includes meta data of the experiment
     - **neurons:** This directory contains neuron-specific information. Below are a list of important variables in this directory
         - `area.npy`: contains the area of each neuron
-        - `cell_motor_coordinates.npy`: contains the position (x, y, z) of each neuron in the cortex, given in microns. **Note:** The
+        - `cell_motor_coordinates.npy`: contains the position (x, y, z) of each neuron in the cortex, given in microns.
         - `layer.npy`: contains the cortex layer to which neuron belongs to
         - `unit_ids.npy`: contains a unique id for each neuron
     - **statistics:** This directory contains statistics (i.e. mean, median, etc.) of the experimental variables (i.e. behavior, images, pupil_center, and responses).
       - **Note:** The statistics of the responses are or particular importance, because we provide the deconvolved calcium traces here in the responses.
       
-        However, for the evaluation of submissions in the competition, we require the responses to be **standardized** (i.e. `r = r/(std_r)`).
+        However, for the evaluation of submissions in the competition, we require the responses to be **standardized** (i.e. `r = r/(std_r)`), with the `std` computed across all images on the training set.
         
         For more information, please refer to the [**Submission Section**](../submission_tutorial/)
     - **trials:** This directory contains trial-specific meta data. 
