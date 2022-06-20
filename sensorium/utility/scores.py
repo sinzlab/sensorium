@@ -1,97 +1,31 @@
-import types
-import contextlib
 import warnings
-from itertools import combinations
-
 import numpy as np
 import torch
 
-from .measure_helpers import get_subset_of_repeats, is_ensemble_function
-
-from neuralpredictors.measures.np_functions import (
-    corr,
-    fev,
-    oracle_corr_conservative,
-    oracle_corr_jackknife,
-    explainable_var,
-    snr,
-)
+from neuralpredictors.measures.np_functions import corr, fev
 from neuralpredictors.training import eval_state, device_state
 
+from .submission import get_data_filetree_loader
 
-def model_predictions_repeats(
-    model, dataloader, data_key, device="cuda", broadcast_to_target=False
-):
+
+def split_images(responses, image_ids):
     """
-    Computes model predictions for a dataloader that yields batches with identical inputs along the first dimension.
-    Unique inputs will be forwarded only once through the model
+    Split the responses (or predictions) array based on image ids. Each element of the list contains
+    the responses to repeated presentations of a single image.
+
+    Args:
+        responses (np.array): Recorded neural responses, or predictions. Shape: (n_trials, n_neurons)
+
     Returns:
-        target: ground truth, i.e. neuronal firing rates of the neurons as a list: [num_images][num_reaps, num_neurons]
-        output: responses as predicted by the network for the unique images. If broadcast_to_target, returns repeated
-                outputs of shape [num_images][num_reaps, num_neurons] else (default) returns unique outputs of shape [num_images, num_neurons]
+        list: responses or predictios split across images. [n_images] np.array(n_repeats, n_neurons)
     """
-    target, output = [], []
-    unique_images = torch.empty(0).to(device)
-    for batch in dataloader:
-        batch_args = list(batch)
-        batch_kwargs = batch._asdict() if not isinstance(batch, dict) else batch
-        images, responses = batch_args[:2]
 
-        if len(images.shape) == 5:
-            images = images.squeeze(dim=0)
-            responses = responses.squeeze(dim=0)
+    per_image_repeats = []
+    for image_id in np.unique(image_ids):
+        responses_across_repeats = responses[image_ids == image_id]
+        per_image_repeats.append(responses_across_repeats)
 
-        assert torch.all(
-            torch.eq(
-                images[-1, :1, ...],
-                images[0, :1, ...],
-            )
-        ), "All images in the batch should be equal"
-        unique_images = torch.cat(
-            (
-                unique_images,
-                images[
-                    0:1,
-                ].to(device),
-            ),
-            dim=0,
-        )
-        target.append(responses.detach().cpu().numpy())
-
-        if len(batch) > 2:
-            with eval_state(model) if not is_ensemble_function(
-                model
-            ) else contextlib.nullcontext():
-                with device_state(model, device) if not is_ensemble_function(
-                    model
-                ) else contextlib.nullcontext():
-                    output.append(
-                        model(*batch_args, data_key=data_key, **batch_kwargs)
-                        .detach()
-                        .cpu()
-                        .numpy()
-                    )
-
-    # Forward unique images once
-    with torch.no_grad():
-        if len(output) == 0:
-            with eval_state(model) if not is_ensemble_function(
-                model
-            ) else contextlib.nullcontext():
-                with device_state(model, device) if not is_ensemble_function(
-                    model
-                ) else contextlib.nullcontext():
-                    output = (
-                        model(unique_images.to(device), data_key=data_key)
-                        .detach()
-                        .cpu()
-                    )
-
-                output = output.numpy()
-
-    if broadcast_to_target:
-        output = [np.broadcast_to(x, target[idx].shape) for idx, x in enumerate(output)]
-    return target, output
+    return per_image_repeats
 
 
 def model_predictions(model, dataloader, data_key, device="cpu"):
@@ -112,13 +46,15 @@ def model_predictions(model, dataloader, data_key, device="cpu"):
         batch_kwargs = batch._asdict() if not isinstance(batch, dict) else batch
 
         with torch.no_grad():
-            with device_state(model, device) if not is_ensemble_function(
-                model
-            ) else contextlib.nullcontext():
+            with device_state(model, device):
                 output = torch.cat(
                     (
                         output,
-                        (model(images.to(device), data_key=data_key, **batch_kwargs).detach().cpu()),
+                        (
+                            model(images.to(device), data_key=data_key, **batch_kwargs)
+                            .detach()
+                            .cpu()
+                        ),
                     ),
                     dim=0,
                 )
@@ -127,37 +63,31 @@ def model_predictions(model, dataloader, data_key, device="cpu"):
     return target.numpy(), output.numpy()
 
 
-def get_signal_correlations(
-    model, dataloaders, device="cpu", as_dict=False, per_neuron=True
+def get_correlations(
+    model, dataloaders, tier=None, device="cpu", as_dict=False, per_neuron=True, **kwargs
 ):
     """
-    Returns correlation between model outputs and average responses over repeated trials
+    Computes single-trial correlation between model prediction and true responses
 
+    Args:
+        model (torch.nn.Module): Model used to predict responses.
+        dataloaders (dict): dict of test set torch dataloaders.
+        tier(str): the data-tier (train/test/val). If tier is None, then it is assumed that the the tier-key is not present.
+        device (str, optional): device to compute on. Defaults to "cpu".
+        as_dict (bool, optional): whether to return the results per data_key. Defaults to False.
+        per_neuron (bool, optional): whether to return the results per neuron or averaged across neurons. Defaults to True.
+
+    Returns:
+        dict or np.ndarray: contains the correlation values.
     """
-    if "test" in dataloaders:
-        dataloaders = dataloaders["test"]
-
     correlations = {}
-    for k, loader in dataloaders.items():
-
-        # Compute correlation with average targets
-        target, output = model_predictions_repeats(
-            dataloader=loader,
-            model=model,
-            data_key=k,
-            device=device,
-            broadcast_to_target=False,
+    dl = dataloaders[tier] if tier is not None else dataloaders
+    for k, v in dl.items():
+        target, output = model_predictions(
+            dataloader=v, model=model, data_key=k, device=device
         )
+        correlations[k] = corr(target, output, axis=0)
 
-        target_mean = np.array([t.mean(axis=0) for t in target])
-        output_mean = (
-            np.array([t.mean(axis=0) for t in output])
-            if target[0].shape == output[0].shape
-            else output
-        )
-        correlations[k] = corr(target_mean, output_mean, axis=0)
-
-        # Check for nans
         if np.any(np.isnan(correlations[k])):
             warnings.warn(
                 "{}% NaNs , NaNs will be set to Zero.".format(
@@ -175,26 +105,37 @@ def get_signal_correlations(
     return correlations
 
 
-def get_correlations(
-    model, dataloaders, device="cpu", as_dict=False, per_neuron=True, **kwargs
+def get_signal_correlations(
+    model, dataloaders, tier, device="cpu", as_dict=False, per_neuron=True
 ):
+    """
+    Same as `get_correlations` but first responses and predictions are averaged across repeats
+    and then the correlation is computed. In other words, the correlation is computed between
+    the means across repeats.
+    """
     correlations = {}
-    with eval_state(model) if not is_ensemble_function(
-        model
-    ) else contextlib.nullcontext():
-        for k, v in dataloaders.items():
-            target, output = model_predictions(
-                dataloader=v, model=model, data_key=k, device=device
-            )
-            correlations[k] = corr(target, output, axis=0)
+    for data_key, dataloader in dataloaders[tier].items():
+        trial_indices, image_ids, neuron_ids, responses = get_data_filetree_loader(
+            dataloader=dataloader, tier=tier
+        )
+        _, predictions = model_predictions(
+            model, dataloader, data_key=data_key, device=device
+        )
 
-            if np.any(np.isnan(correlations[k])):
-                warnings.warn(
-                    "{}% NaNs , NaNs will be set to Zero.".format(
-                        np.isnan(correlations[k]).mean() * 100
-                    )
-                )
-            correlations[k][np.isnan(correlations[k])] = 0
+        repeats_responses = split_images(responses, image_ids)
+        repeats_predictions = split_images(predictions, image_ids)
+
+        mean_responses, mean_predictions = [], []
+        for repeat_responses, repeat_predictions in zip(
+            repeats_responses, repeats_predictions
+        ):
+            mean_responses.append(repeat_responses.mean(axis=0, keepdims=True))
+            mean_predictions.append(repeat_predictions.mean(axis=0, keepdims=True))
+
+        mean_responses = np.vstack(mean_responses)
+        mean_predictions = np.vstack(mean_predictions)
+
+        correlations[data_key] = corr(mean_responses, mean_predictions, axis=0)
 
     if not as_dict:
         correlations = (
@@ -202,7 +143,52 @@ def get_correlations(
             if per_neuron
             else np.mean(np.hstack([v for v in correlations.values()]))
         )
-    return correlations
+
+    return correlations if per_neuron else correlations.mean()
+
+
+def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True, fev_threshold=0.15, as_dict=False):
+    """
+    Compute the fraction of explainable variance explained per neuron.
+
+    Args:
+        model (torch.nn.Module): Model used to predict responses.
+        dataloaders (dict): dict of test set torch dataloaders.
+        tier (str): specify the tier for which fev should be computed.
+        device (str, optional): device to compute on. Defaults to "cpu".
+        per_neuron (bool, optional): whether to return the results per neuron or averaged across neurons. Defaults to True.
+        fev_threshold (float): the FEV threshold under which a neuron will not be ignored.
+
+    Returns:
+        np.ndarray: the fraction of explainable variance explained.
+    """
+    feves = {}
+    for data_key, dataloader in dataloaders[tier].items():
+        trial_indices, image_ids, neuron_ids, responses = get_data_filetree_loader(
+            dataloader=dataloader, tier=tier
+        )
+        _, predictions = model_predictions(
+            model, dataloader, data_key=data_key, device=device
+        )
+        fev_val, feve_val = fev(
+            split_images(responses, image_ids),
+            split_images(predictions, image_ids),
+            return_exp_var=True,
+        )
+
+        # ignore neurons below FEV threshold
+        feve_val = feve_val[fev_val >= fev_threshold]
+
+        feves[data_key] = feve_val
+
+    if not as_dict:
+        feves = (
+            np.hstack([v for v in feves.values()])
+            if per_neuron
+            else np.mean(np.hstack([v for v in feves.values()]))
+        )
+
+    return feves if per_neuron else feves.mean()
 
 
 def get_poisson_loss(
@@ -215,16 +201,12 @@ def get_poisson_loss(
     eps=1e-12,
 ):
     poisson_loss = {}
-    with torch.no_grad():
-        with eval_state(model) if not is_ensemble_function(
-            model
-        ) else contextlib.nullcontext():
-            for k, v in dataloaders.items():
-                target, output = model_predictions(
-                    dataloader=v, model=model, data_key=k, device=device
-                )
-                loss = output - target * np.log(output + eps)
-                poisson_loss[k] = np.mean(loss, axis=0) if avg else np.sum(loss, axis=0)
+    for k, v in dataloaders.items():
+        target, output = model_predictions(
+            dataloader=v, model=model, data_key=k, device=device
+        )
+        loss = output - target * np.log(output + eps)
+        poisson_loss[k] = np.mean(loss, axis=0) if avg else np.sum(loss, axis=0)
     if as_dict:
         return poisson_loss
     else:
@@ -236,70 +218,3 @@ def get_poisson_loss(
                 if avg
                 else np.sum(np.hstack([v for v in poisson_loss.values()]))
             )
-
-
-def get_fraction_oracles(model, dataloaders, device="cpu", conservative=False):
-    dataloaders = dataloaders["test"] if "test" in dataloaders else dataloaders
-    if conservative:
-        oracles = get_get_oracles_correctedoracles_corrected(
-            dataloaders=dataloaders, as_dict=False, per_neuron=True
-        )
-    else:
-        oracles = get_oracles(dataloaders=dataloaders, as_dict=False, per_neuron=True)
-    test_correlation = get_correlation(
-        model=model,
-        dataloaders=dataloaders,
-        device=device,
-        as_dict=False,
-        per_neuron=True,
-    )
-    oracle_performance, _, _, _ = np.linalg.lstsq(
-        np.hstack(oracles)[:, np.newaxis], np.hstack(test_correlation)
-    )
-    return oracle_performance[0]
-
-
-def get_FEV(
-    model,
-    dataloaders,
-    device="cpu",
-    as_dict=False,
-    per_neuron=True,
-):
-    """
-    Computes the fraction of explainable variance explained (FEVe) per Neuron, given a model and a dictionary of dataloaders.
-    The dataloaders will have to return batches of identical images, with the corresponing neuronal responses.
-
-    Args:
-        model (object): PyTorch module
-        dataloaders (dict): Dictionary of dataloaders, with keys corresponding to "data_keys" in the model
-        device (str): 'cuda' or 'gpu
-        as_dict (bool): Returns the scores as a dictionary ('data_keys': values) if set to True.
-        per_neuron (bool): Returns the grand average if set to True.
-        threshold (float): for the avg feve, excludes neurons with a explainable variance below threshold
-
-    Returns:
-        FEV (dict, or np.array, or float): Fraction of explainable varianced explained. Per Neuron or as grand average.
-    """
-    dataloaders = dataloaders["test"] if "test" in dataloaders else dataloaders
-    FEV = {}
-    with eval_state(model) if not is_ensemble_function(
-        model
-    ) else contextlib.nullcontext():
-        for data_key, dataloader in dataloaders.items():
-            targets, outputs = model_predictions_repeats(
-                model=model,
-                dataloader=dataloader,
-                data_key=data_key,
-                device=device,
-                broadcast_to_target=True,
-            )
-            FEV[data_key] = fev(targets, outputs)
-
-    if not as_dict:
-        FEV = (
-            np.hstack([v for v in FEV.values()])
-            if per_neuron
-            else np.mean(np.hstack([v for v in FEV.values()]))
-        )
-    return FEV

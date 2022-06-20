@@ -1,5 +1,6 @@
 import copy
 
+
 def prepare_grid(grid_mean_predictor, dataloaders):
     """
     Utility function for using the neurons cortical coordinates

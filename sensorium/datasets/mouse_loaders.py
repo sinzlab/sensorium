@@ -41,14 +41,12 @@ def static_loader(
     select_input_channel: int = None,
     file_tree: bool = True,
     image_condition=None,
-    return_test_sampler: bool = False,
     inputs_mean=None,
     inputs_std=None,
     scale: float = None,
     include_eye_position: bool = None,
     add_eye_pos_as_channels: bool = None,
     include_trial_info_keys: list = None,
-    toy_data: bool = None,
     include_px_position=None,
     image_reshape_list=None,
     trial_idx_selection=None,
@@ -76,7 +74,6 @@ def static_loader(
         select_input_channel (int, optional): Only for color images. Select a color channel
         file_tree (bool, optional): whether to use the file tree dataset format. If False, equivalent to the HDF5 format
         image_condition (str, or list of str, optional): selection of images based on the image condition
-        return_test_sampler (bool, optional): whether to return only the test loader with repeat-batches
 
     Returns:
         if get_key is False returns a dictionary of dataloaders for one dataset, where the keys are 'train', 'validation', and 'test'.
@@ -206,20 +203,9 @@ def static_loader(
     else:
         data_key = f"{dat.neurons.animal_ids[0]}-{dat.neurons.sessions[0]}-{dat.neurons.scan_idx[0]}"
 
-    if return_test_sampler:
-        dataloader = get_oracle_dataloader(
-            dat,
-            image_condition=image_condition,
-            file_tree=file_tree,
-            data_key=data_key,
-            toy_data=toy_data,
-            trial_idx_selection=trial_idx_selection,
-        )
-        return dataloader
-
     # subsample images
     dataloaders = {}
-    keys = [tier] if tier else ["train", "validation", "test"]
+    keys = [tier] if tier else ["train", "validation", "test", "final_test"]
     tier_array = dat.trial_info.tiers if file_tree else dat.tiers
 
     dat_info = dat.info if not file_tree else dat.trial_info
@@ -319,8 +305,6 @@ def static_loaders(
     add_eye_pos_as_channels: bool = None,
     include_trial_info_keys: list = None,
     overwrite_data_path: bool = True,
-    return_test_sampler: bool = None,
-    toy_data: bool = None,
     include_px_position=None,
     image_reshape_list=None,
     trial_idx_selection=None,
@@ -349,6 +333,9 @@ def static_loaders(
         include_behavior (bool, optional): whether to include behavioral data
         select_input_channel (int, optional): Only for color images. Select a color channel
         file_tree (bool, optional): whether to use the file tree dataset format. If False, equivalent to the HDF5 format
+        scale(float, optional): scalar factor for the image resolution.
+            scale = 1: full iamge resolution (144 x 256)
+            scale = 0.25: resolution used for model training (36 x 64)
 
     Returns:
         dict: dictionary of dictionaries where the first level keys are 'train', 'validation', and 'test', and second level keys are data_keys.
@@ -356,10 +343,9 @@ def static_loaders(
     if seed is not None:
         set_random_seed(seed)
     dls = OrderedDict({})
-    if not return_test_sampler:
-        keys = [tier] if tier else ["train", "validation", "test"]
-        for key in keys:
-            dls[key] = OrderedDict({})
+    keys = [tier] if tier else ["train", "validation", "test", "final_test"]
+    for key in keys:
+        dls[key] = OrderedDict({})
     neuron_ids = [neuron_ids] if neuron_ids is None else neuron_ids
     image_ids = [image_ids] if image_ids is None else image_ids
     trial_idx_selection = (
@@ -401,16 +387,11 @@ def static_loaders(
             include_eye_position=include_eye_position,
             add_eye_pos_as_channels=add_eye_pos_as_channels,
             include_trial_info_keys=include_trial_info_keys,
-            return_test_sampler=return_test_sampler,
-            toy_data=toy_data,
             include_px_position=include_px_position,
             image_reshape_list=image_reshape_list,
             trial_idx_selection=trial_idx_selection,
         )
-        if not return_test_sampler:
-            for k in dls:
-                dls[k][out[0]] = out[1][k]
-        else:
-            dls.update(out)
+        for k in dls:
+            dls[k][out[0]] = out[1][k]
 
     return dls
