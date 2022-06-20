@@ -13,7 +13,7 @@ For more information about the competition, vist our [website](https://sensorium
 Have a look at our [White paper on arXiv](https://arxiv.org/abs/2206.08666), which describes the dataset and competition in detail.
 
 # Important Dates
-**June 20, 2022**: Start of the competition and data release. The data structure is similar to the data available at https://gin.g-node.org/cajal/Lurz2020.
+**June 20, 2022**: Start of the competition and data release.
 <br>**Oct 15, 2022**: Submission deadline.
 <br>**Oct 22, 2022**: Validation of all submitted scores completed. Preliminary winners are announced. Rank 1-3 in both competition tracks are contacted to provide the code for their submission.
 <br>**Nov 5, 2022**: Deadline for top-ranked entries to provide the code for their submission.
