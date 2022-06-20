@@ -1,12 +1,10 @@
-import types
-import contextlib
 import warnings
-from itertools import combinations
 import numpy as np
 import torch
+
 from neuralpredictors.measures.np_functions import corr, fev
 from neuralpredictors.training import eval_state, device_state
-from .measure_helpers import get_subset_of_repeats, is_ensemble_function
+
 from .submission import get_data_filetree_loader
 
 
@@ -48,9 +46,7 @@ def model_predictions(model, dataloader, data_key, device="cpu"):
         batch_kwargs = batch._asdict() if not isinstance(batch, dict) else batch
 
         with torch.no_grad():
-            with device_state(model, device) if not is_ensemble_function(
-                model
-            ) else contextlib.nullcontext():
+            with device_state(model, device):
                 output = torch.cat(
                     (
                         output,
@@ -84,22 +80,19 @@ def get_correlations(
         dict or np.ndarray: contains the correlation values.
     """
     correlations = {}
-    with eval_state(model) if not is_ensemble_function(
-        model
-    ) else contextlib.nullcontext():
-        for k, v in dataloaders.items():
-            target, output = model_predictions(
-                dataloader=v, model=model, data_key=k, device=device
-            )
-            correlations[k] = corr(target, output, axis=0)
+    for k, v in dataloaders[tier].items():
+        target, output = model_predictions(
+            dataloader=v, model=model, data_key=k, device=device
+        )
+        correlations[k] = corr(target, output, axis=0)
 
-            if np.any(np.isnan(correlations[k])):
-                warnings.warn(
-                    "{}% NaNs , NaNs will be set to Zero.".format(
-                        np.isnan(correlations[k]).mean() * 100
-                    )
+        if np.any(np.isnan(correlations[k])):
+            warnings.warn(
+                "{}% NaNs , NaNs will be set to Zero.".format(
+                    np.isnan(correlations[k]).mean() * 100
                 )
-            correlations[k][np.isnan(correlations[k])] = 0
+            )
+        correlations[k][np.isnan(correlations[k])] = 0
 
     if not as_dict:
         correlations = (
@@ -152,7 +145,7 @@ def get_signal_correlations(
     return correlations if per_neuron else correlations.mean()
 
 
-def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True, fev_threshold=0.15):
+def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True, fev_threshold=0.15, as_dict=False):
     """
     Compute the fraction of explainable variance explained per neuron.
 
@@ -162,12 +155,12 @@ def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True, fev_thresho
         tier (str): specify the tier for which fev should be computed.
         device (str, optional): device to compute on. Defaults to "cpu".
         per_neuron (bool, optional): whether to return the results per neuron or averaged across neurons. Defaults to True.
-        fev_threshold (float): the FEV threshold under which a neuron will not be ignored. 
+        fev_threshold (float): the FEV threshold under which a neuron will not be ignored.
 
     Returns:
         np.ndarray: the fraction of explainable variance explained.
     """
-    correlations = {}
+    feves = {}
     for data_key, dataloader in dataloaders[tier].items():
         trial_indices, image_ids, neuron_ids, responses = get_data_filetree_loader(
             dataloader=dataloader, tier=tier
@@ -184,28 +177,16 @@ def get_fev(model, dataloaders, tier, device="cpu", per_neuron=True, fev_thresho
         # ignore neurons below FEV threshold
         feve_val = feve_val[fev_val >= fev_threshold]
 
-        return feve_val if per_neuron else feve_val.mean()
+        feves[data_key] = feve_val
 
-
-def get_fraction_oracles(model, dataloaders, device="cpu", conservative=False):
-    dataloaders = dataloaders["test"] if "test" in dataloaders else dataloaders
-    if conservative:
-        oracles = get_get_oracles_correctedoracles_corrected(
-            dataloaders=dataloaders, as_dict=False, per_neuron=True
+    if not as_dict:
+        feves = (
+            np.hstack([v for v in feves.values()])
+            if per_neuron
+            else np.mean(np.hstack([v for v in feves.values()]))
         )
-    else:
-        oracles = get_oracles(dataloaders=dataloaders, as_dict=False, per_neuron=True)
-    test_correlation = get_correlation(
-        model=model,
-        dataloaders=dataloaders,
-        device=device,
-        as_dict=False,
-        per_neuron=True,
-    )
-    oracle_performance, _, _, _ = np.linalg.lstsq(
-        np.hstack(oracles)[:, np.newaxis], np.hstack(test_correlation)
-    )
-    return oracle_performance[0]
+
+    return feves if per_neuron else feves.mean()
 
 
 def get_poisson_loss(
@@ -218,16 +199,12 @@ def get_poisson_loss(
     eps=1e-12,
 ):
     poisson_loss = {}
-    with torch.no_grad():
-        with eval_state(model) if not is_ensemble_function(
-            model
-        ) else contextlib.nullcontext():
-            for k, v in dataloaders.items():
-                target, output = model_predictions(
-                    dataloader=v, model=model, data_key=k, device=device
-                )
-                loss = output - target * np.log(output + eps)
-                poisson_loss[k] = np.mean(loss, axis=0) if avg else np.sum(loss, axis=0)
+    for k, v in dataloaders.items():
+        target, output = model_predictions(
+            dataloader=v, model=model, data_key=k, device=device
+        )
+        loss = output - target * np.log(output + eps)
+        poisson_loss[k] = np.mean(loss, axis=0) if avg else np.sum(loss, axis=0)
     if as_dict:
         return poisson_loss
     else:

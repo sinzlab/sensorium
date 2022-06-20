@@ -152,11 +152,11 @@ def generate_submission_file(
                 "neuron_ids": [neuron_ids] * len(test_predictions),
             }
         )
-
-        submission_filename = f"submission_file_{tier}.csv"
+        tier_name = tier if tier != "test" else "live_test"
+        submission_filename = f"submission_file_{tier_name}.csv"
         save_path = os.path.join(path, submission_filename) if path is not None else submission_filename
         df.to_csv(save_path, index=False)
-        print(f"Submission file saved for tier: {tier}. Saved in: {save_path}")
+        print(f"Submission file saved for tier: {tier_name}. Saved in: {save_path}")
 
 
 def generate_ground_truth_file(
@@ -200,3 +200,4 @@ def generate_ground_truth_file(
         gt_filename = f"ground_truth_file_{tier}.csv"
         save_path = os.path.join(path, gt_filename) if path is not None else gt_filename
         df.to_csv(save_path, index=False)
+        print(f"Submission file saved for tier: {tier}. Saved in: {save_path}")
