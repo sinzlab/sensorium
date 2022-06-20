@@ -13,7 +13,7 @@ setup(
     packages=find_packages(exclude=[]),
     install_requires=[
         "neuralpredictors==0.3.0",
-        "nnfabrik==0.2.0",
+        "nnfabrik==0.2.1",
         "scikit-image>=0.19.1",
         "lipstick",
         "numpy>=1.22.0",
