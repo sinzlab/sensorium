@@ -64,7 +64,7 @@ def model_predictions(model, dataloader, data_key, device="cpu"):
 
 
 def get_correlations(
-    model, dataloaders, tier="test", device="cpu", as_dict=False, per_neuron=True, **kwargs
+    model, dataloaders, tier=None, device="cpu", as_dict=False, per_neuron=True, **kwargs
 ):
     """
     Computes single-trial correlation between model prediction and true responses
@@ -72,6 +72,7 @@ def get_correlations(
     Args:
         model (torch.nn.Module): Model used to predict responses.
         dataloaders (dict): dict of test set torch dataloaders.
+        tier(str): the data-tier (train/test/val). If tier is None, then it is assumed that the the tier-key is not present.
         device (str, optional): device to compute on. Defaults to "cpu".
         as_dict (bool, optional): whether to return the results per data_key. Defaults to False.
         per_neuron (bool, optional): whether to return the results per neuron or averaged across neurons. Defaults to True.
@@ -80,7 +81,8 @@ def get_correlations(
         dict or np.ndarray: contains the correlation values.
     """
     correlations = {}
-    for k, v in dataloaders[tier].items():
+    dl = dataloaders[tier] if tier is not None else dataloaders
+    for k, v in dl.items():
         target, output = model_predictions(
             dataloader=v, model=model, data_key=k, device=device
         )
