@@ -333,6 +333,9 @@ def static_loaders(
         include_behavior (bool, optional): whether to include behavioral data
         select_input_channel (int, optional): Only for color images. Select a color channel
         file_tree (bool, optional): whether to use the file tree dataset format. If False, equivalent to the HDF5 format
+        scale(float, optional): scalar factor for the image resolution.
+            scale = 1: full iamge resolution (144 x 256)
+            scale = 0.25: resolution used for model training (36 x 64)
 
     Returns:
         dict: dictionary of dictionaries where the first level keys are 'train', 'validation', and 'test', and second level keys are data_keys.
