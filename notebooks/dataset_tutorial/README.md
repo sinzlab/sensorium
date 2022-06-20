@@ -2,7 +2,7 @@
 
 Below we provide a brief explanation of the dataset structure and how to access all the information contained in them.
 
-Have a look at our white paper for in depth description of the data. [https://link_to_arxiv_submission](https://gin.g-node.org/cajal/Sensorium2022)
+Have a look at our white paper for in depth description of the data. [White paper on arXiv](https://arxiv.org/abs/2206.08666)
 
 We provide the datasets in the .zip format. Unzipping them will create two folders **data** and **meta**.
 
