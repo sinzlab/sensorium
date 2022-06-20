@@ -12,7 +12,8 @@ setup(
     # author_email="sinzlab@gmail.com",
     packages=find_packages(exclude=[]),
     install_requires=[
-        "nnfabrik==0.1.0",
+        "neuralpredictors==0.3.0",
+        "nnfabrik==0.2.1",
         "scikit-image>=0.19.1",
         "lipstick",
         "numpy>=1.22.0",
