@@ -50,4 +50,4 @@ We provide notebooks that illustrate the structure of our data, our baselines mo
 <br>[**Submission tutorial**](notebooks/submission_tutorial/): Use our API to make a submission to our competition.
 
 
-If you have any questions, feel free to reach out to us (Contact section on our [website](https://sensorium2022.net/)), or raise in issue here on GitHub!
+If you have any questions, feel free to reach out to us (Contact section on our [website](https://sensorium2022.net/)), or raise an issue here on GitHub!
