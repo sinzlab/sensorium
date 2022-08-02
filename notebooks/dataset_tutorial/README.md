@@ -35,8 +35,8 @@ We provide the datasets in the .zip format. Unzipping them will create two folde
       
       # relate meta data with neuronal data
       trial_image_id = image_ids[0]
-      corresponding_image = np.load('./data/images/0.npy')
-      corresponding_neuronal_response = np.load('./data/responses/0.npy')
+      corresponding_image = np.load(f'./data/images/{trial_image_id}.npy')
+      corresponding_neuronal_response = np.load(f'./data/responses/{trial_image_id}.npy')
         ```
 
         Below are a list of important variables in this directory.
