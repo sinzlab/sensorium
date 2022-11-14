@@ -138,6 +138,7 @@ def static_loader(
 
     if file_tree:
         dat = FileTreeDataset(path, *data_keys)
+        print(path, data_keys)
     else:
         dat = StaticImageSet(path, *data_keys)
 
@@ -205,6 +206,8 @@ def static_loader(
             more_transforms.insert(0, NeuroNormalizer(dat, exclude=exclude))
 
     dat.transforms.extend(more_transforms)
+    
+    print(dat)
 
     # create the data_key for a specific data path
     if "preproc" in path:
