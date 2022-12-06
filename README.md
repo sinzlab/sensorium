@@ -66,8 +66,6 @@ The competition aimed to find the best neural predictive model that can predict 
     ```
 
 >Note: The gts can be found in the [`data/gts/`](data/gts/) directory. You may specify more metrics in the [metrics.sh](metrics.sh) script.
-## Acknowledgement
-
-This repo is a part of our course project for CSN-526: Machine Learning under [Professor Pravendra Singh](https://sites.google.com/view/pravendra/) at CSE Department, IIT Roorkee. The code is open-sourced under the MIT License.
-
-### Team Members
+## Tutorial Notebooks
+[**Dataset tutorial**](notebooks/dataset_tutorial/): Shows the structure of the data and how to turn it into a PyTorch DataLoader.
+<br>[**Model tutorial**](notebooks/model_tutorial/): How to train and evaluate baseline models.
