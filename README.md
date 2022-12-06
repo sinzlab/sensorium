@@ -1,53 +1,73 @@
+# SENSORIUM 2022 Competition Submission
+
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 [![hub](https://img.shields.io/badge/powered%20by-hub%20-ff5a1f.svg)](https://github.com/activeloopai/Hub)
 
-# SENSORIUM 2022 Competition
+## Contents
 
-![plot](figures/Fig1.png)
-SENSORIUM is a competition on predicting large scale mouse primary visual cortex activity. We will provide large scale datasets of neuronal activity in the visual cortex of mice. Participants will train models on pairs of natural stimuli and recorded neuronal responses, and submit the predicted responses to a set of test images for which responses are withheld.
+1. [Overview](#1-overview)
+2. [Setup Instructions](#2-setup-instructions)
+3. [Experiments](#3-experiments)
 
-Join our challenge and compete for the best neural predictive model!
+## 1. Overview
 
-For more information about the competition, vist our [website](https://sensorium2022.net/).
+![Fig1](https://user-images.githubusercontent.com/102295389/205992650-ce6d5b0f-99b6-4e25-b88d-7cc7a4124925.png)
 
-Have a look at our [White paper on arXiv](https://arxiv.org/abs/2206.08666), which describes the dataset and competition in detail.
+This repo contains our submission for the **NeurIPS 2022 The SENSORIUM competition** on predicting large scale mouse primary visual cortex activity.<br/>
+The competition aimed to find the best neural predictive model that can predict the activity of thousands of neurons in the primary visual cortex of mice in response to natural images.
 
-# Important Dates
-**June 20, 2022**: Start of the competition and data release.
-<br>**Oct 15, 2022**: Submission deadline.
-<br>**Oct 22, 2022**: Validation of all submitted scores completed. Preliminary winners are announced. Rank 1-3 in both competition tracks are contacted to provide the code for their submission.
-<br>**Nov 5, 2022**: Deadline for top-ranked entries to provide the code for their submission.
-<br>**Nov 15, 2022**: Winners contacted to contribute to the competition summary write-up.
+### Tracks
+**SENSORIUM** - Stimulus-only - Assessed on how well they predict neural activity solely considering the stimulus averaged over trials.<br/>
+**SENSORIUM+** - Stimulus-and-Behavior - Assessed based on how well they can predict individual trials given behavioral variables.
 
-# Starter-kit
+## 2. Setup Instructions
 
-Below we provide a step-by-step guide for getting started with the competition.
+- Clone the repo:
 
-## 1. Pre-requisites
-- install [**docker**](https://docs.docker.com/get-docker/) and [**docker-compose**](https://docs.docker.com/compose/install/)
-- install git
-- clone the repo via `git clone https://github.com/sinzlab/sensorium.git`
+    ```.bash
+    git clone https://github.com/praeclarumjj3/NST-Tech.git
+    cd NST-Tech
+    ```
 
-## 2. Download neural data
+- Create a conda environment:
 
-You can download the data from [https://gin.g-node.org/cajal/Sensorium2022](https://gin.g-node.org/cajal/Sensorium2022) and place it in `sensorium/notebooks/data`.
-**Note:** Downloading the files all at once as a directory does lead to unfortunate errors. Thus, all datastes have to be downloaded individually.
+    ```.bash
+    conda env create -f conda_env.yml
+    conda activate nst
+    ```
 
-## 3. Run the example notebooks
+## 3. Experiments
 
-### **Start Jupyterlab environment**
-```
-cd sensorium/
-docker-compose run -d -p 10101:8888 jupyterlab
-```
-now, type in `localhost:10101` in your favorite browser, and you are ready to go!
+### Training
 
+- Execute the following command to run style transfer:
 
-## **Competition example notebooks**
-We provide notebooks that illustrate the structure of our data, our baselines models, and how to make a submission to the competition.
-<br>[**Dataset tutorial**](notebooks/dataset_tutorial/): Shows the structure of the data and how to turn it into a PyTorch DataLoader.
-<br>[**Model tutorial**](notebooks/model_tutorial/): How to train and evaluate our baseline models.
-<br>[**Submission tutorial**](notebooks/submission_tutorial/): Use our API to make a submission to our competition.
+    ```bash
+    sh nst.sh
+    ```
 
+>Note: There are arguments specified in the `nst.sh` script. Please modify them to run experiments under different settings.
+- You may specify the `content` and `style` images to be used from the [data/content](data/content) and [data/style](data/style) folders respectively.
 
-If you have any questions, feel free to reach out to us (Contact section on our [website](https://sensorium2022.net/)), or raise an issue here on GitHub!
+### Evaluation
+
+- We use the predictions from the [AdaIn-Style](https://github.com/xunhuang1995/AdaIN-style) method proposed in [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/abs/1703.06868) as ground truths while evaluating the performance of our method.
+
+- Install [`image-similarity-measures`](https://github.com/up42/image-similarity-measures):
+
+    ```.bash
+    pip install image-similarity-measures[speedups]
+    ```
+
+- Execute the following command to calculate the `PSNR`, `SSIM` and `RMSE` scores:
+
+    ```.bash
+    sh metrics.sh [path-to-gt] [path-to-our-prediction]
+    ```
+
+>Note: The gts can be found in the [`data/gts/`](data/gts/) directory. You may specify more metrics in the [metrics.sh](metrics.sh) script.
+## Acknowledgement
+
+This repo is a part of our course project for CSN-526: Machine Learning under [Professor Pravendra Singh](https://sites.google.com/view/pravendra/) at CSE Department, IIT Roorkee. The code is open-sourced under the MIT License.
+
+### Team Members
