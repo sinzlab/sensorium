@@ -1,4 +1,4 @@
-# SENSORIUM 2022 Competition Submission
+# SENSORIUM+ 2022 Competition Submission
 
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 [![hub](https://img.shields.io/badge/powered%20by-hub%20-ff5a1f.svg)](https://github.com/activeloopai/Hub)
