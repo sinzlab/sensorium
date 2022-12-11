@@ -7,62 +7,52 @@
 
 1. [Overview](#1-overview)
 2. [Setup Instructions](#2-setup-instructions)
-3. [Experiments](#3-experiments)
+3. [Changes Implemented](#2-changes-implemented)
+4. [Evaluation](#4-evaluation)
 
 ## 1. Overview
 
 ![Fig1](https://user-images.githubusercontent.com/102295389/205992650-ce6d5b0f-99b6-4e25-b88d-7cc7a4124925.png)
 
-This repo contains our submission for the **NeurIPS 2022 The SENSORIUM competition** on predicting large scale mouse primary visual cortex activity.<br/>
-The competition aimed to find the best neural predictive model that can predict the activity of thousands of neurons in the primary visual cortex of mice in response to natural images.
-
-### Tracks
-**SENSORIUM** - Stimulus-only - Assessed on how well they predict neural activity solely considering the stimulus averaged over trials.<br/>
-**SENSORIUM+** - Stimulus-and-Behavior - Assessed based on how well they can predict individual trials given behavioral variables.
+The **NeurIPS 2022 The SENSORIUM competition** aimed to find the best neural predictive model that can predict the activity of thousands of neurons in the primary visual cortex of mice in response to natural images. <br/>
+### Tracks:
+**SENSORIUM** - Stimulus-only - Assessed on how well they predict neural activity solely in response to the visual stimulus averaged over all trials.<br/>
+**SENSORIUM+** - Stimulus-and-Behavior - Assessed based on how well they can predict neural activity given additional behavioral variables. <br/> <br/>
+This repository contains our submission for this competition, where we attempted to improve the baseline model for the competition track- **Sensorium+**.
 
 ## 2. Setup Instructions
-*Recommend Using WSL for Windows Users
-- Clone the repo:
 
-    ```.bash
-    git clone https://github.com/sinzlab/sensorium.git
-    ```
+Below is a step-by-step guide for getting started.
 
-- Install [**docker**](https://docs.docker.com/get-docker/) and [**docker-compose**](https://docs.docker.com/compose/install/)
+### 1. Pre-requisites
+- install [**docker**](https://docs.docker.com/get-docker/) and [**docker-compose**](https://docs.docker.com/compose/install/)
+- install git
+- clone the repo via `git clone https://github.com/sinzlab/sensorium.git`
 
-- Download neural data</br>
-You can download the data from [https://gin.g-node.org/cajal/Sensorium2022](https://gin.g-node.org/cajal/Sensorium2022) and place it in `sensorium/notebooks/data`.
+### 2. Download neural datasets
 
-## 3. Experiments
+You can download the data from [https://gin.g-node.org/cajal/Sensorium2022](https://gin.g-node.org/cajal/Sensorium2022) and place it in `sensorium/notebooks/data`. <br/>
+**Note:** Downloading all the files at once as a directory leads to subsequent errors. Hence, download all datasets individually.
 
-### Training
+### 3. Run the example notebooks
 
-- Execute the following command to run style transfer:
+#### **Start Jupyter environment**
+```
+cd sensorium/
+docker-compose run -d -p 10101:8888 jupyterlab
+```
+Now, type `localhost:10101` in your browser address bar, and you are good to go!
 
-    ```bash
-    sh nst.sh
-    ```
+## 3. Changes implemented:
+- While finding the mean and variance of the neuron specific receptive field, we experimented with introducing multiple samplings of the same to increase number of parameters. </br>
+- Also experimented with making changes in the batch sizes of the datasets during training of the model.
 
->Note: There are arguments specified in the `nst.sh` script. Please modify them to run experiments under different settings.
-- You may specify the `content` and `style` images to be used from the [data/content](data/content) and [data/style](data/style) folders respectively.
+## 4. Evaluation
 
-### Evaluation
+- We use the predictions stored in the .csv submission file, generated using the API provided by Sensorium to evaluate the performance of our method. 
+    
 
-- We use the predictions from the [AdaIn-Style](https://github.com/xunhuang1995/AdaIN-style) method proposed in [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/abs/1703.06868) as ground truths while evaluating the performance of our method.
-
-- Install [`image-similarity-measures`](https://github.com/up42/image-similarity-measures):
-
-    ```.bash
-    pip install image-similarity-measures[speedups]
-    ```
-
-- Execute the following command to calculate the `PSNR`, `SSIM` and `RMSE` scores:
-
-    ```.bash
-    sh metrics.sh [path-to-gt] [path-to-our-prediction]
-    ```
-
->Note: The gts can be found in the [`data/gts/`](data/gts/) directory. You may specify more metrics in the [metrics.sh](metrics.sh) script.
-## Tutorial Notebooks
-[**Dataset tutorial**](notebooks/dataset_tutorial/): Shows the structure of the data and how to turn it into a PyTorch DataLoader.
+### Tutorial Notebooks
+[**Dataset tutorial**](notebooks/dataset_tutorial/):  Visual rendering and analysis of the structure of datasets through graphs and tables, and the code to turn it into a PyTorch DataLoader.
 <br>[**Model tutorial**](notebooks/model_tutorial/): How to train and evaluate baseline models.
+<br>[**Submission tutorial**](notebooks/submission_tutorial/): Use the Sensorium API to generate a .csv file and make a submission to the competition.
