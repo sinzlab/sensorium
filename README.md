@@ -45,11 +45,12 @@ Now, type `localhost:10101` in your browser address bar, and you are good to go!
 
 ## 3. Changes implemented:
 - While finding the mean and variance of the neuron specific receptive field, we experimented with introducing multiple samplings of the same to increase number of parameters. </br>
-- Also experimented with making changes in the batch sizes of the datasets during training of the model.
+- Also experimented with tuning the hyper-parameters such as making changes in the batch sizes of the datasets during training of the model, as well as layers, hidden channels, learning rate.
 
 ## 4. Evaluation
 
 - We use the predictions stored in the .csv submission file, generated using the API provided by Sensorium to evaluate the performance of our method. 
+- We were able to achieve the Single Trial Correlation and The Correlation Average score of the State-Of-The-Art Model.
     
 
 ### Tutorial Notebooks
