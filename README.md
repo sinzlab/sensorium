@@ -50,7 +50,7 @@ Now, type `localhost:10101` in your browser address bar, and you are good to go!
 ## 4. Evaluation
 
 - We use the predictions stored in the .csv submission file, generated using the API provided by Sensorium to evaluate the performance of our method. 
-- We were able to achieve the Single Trial Correlation and The Correlation Average score of the State-Of-The-Art Model.
+- We were able to replicate the Single Trial Correlation and The Correlation Average score of the State-Of-The-Art Model provided.
     
 
 ### Tutorial Notebooks
