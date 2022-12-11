@@ -7,7 +7,7 @@
 
 1. [Overview](#1-overview)
 2. [Setup Instructions](#2-setup-instructions)
-3. [Changes Implemented](#2-changes-implemented)
+3. [Changes Implemented](#3-changes-implemented)
 4. [Evaluation](#4-evaluation)
 
 ## 1. Overview
