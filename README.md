@@ -21,20 +21,17 @@ The competition aimed to find the best neural predictive model that can predict 
 **SENSORIUM+** - Stimulus-and-Behavior - Assessed based on how well they can predict individual trials given behavioral variables.
 
 ## 2. Setup Instructions
-
+*Recommend Using WSL for Windows Users
 - Clone the repo:
 
     ```.bash
-    git clone https://github.com/praeclarumjj3/NST-Tech.git
-    cd NST-Tech
+    git clone https://github.com/sinzlab/sensorium.git
     ```
 
-- Create a conda environment:
+- Install [**docker**](https://docs.docker.com/get-docker/) and [**docker-compose**](https://docs.docker.com/compose/install/)
 
-    ```.bash
-    conda env create -f conda_env.yml
-    conda activate nst
-    ```
+- Download neural data</br>
+You can download the data from [https://gin.g-node.org/cajal/Sensorium2022](https://gin.g-node.org/cajal/Sensorium2022) and place it in `sensorium/notebooks/data`.
 
 ## 3. Experiments
 
