@@ -50,7 +50,7 @@ def stacked_core_full_gauss_readout(
     gamma_shifter=0,
     shifter_bias=True,
     hidden_padding=None,
-    core_bias=False,
+    core_bias=True,
 ):
     """
     Model class of a stacked2dCore (from neuralpredictors) and a pointpooled (spatial transformer) readout
